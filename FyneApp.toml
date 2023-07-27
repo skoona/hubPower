@@ -1,0 +1,8 @@
+Website = "https://github.com/skoona/ggapcmon"
+
+[Details]
+  Icon = "resources/gapc_prefs.png"
+  Name = "Go APC Monitor"
+  ID = "net.skoona.projects.ggapcmon"
+  Version = "2.0.0"
+  Build = 6
