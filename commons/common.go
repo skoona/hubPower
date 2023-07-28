@@ -23,7 +23,7 @@ const (
 
 // ShutdownSignals alternate panic() implementation, causes an orderly shutdown
 var ShutdownSignals chan os.Signal
-var DebugLoggingEnabled = ("true" == os.Getenv("GAPC_DEBUG")) // "true" / "false"
+var DebugLoggingEnabled = ("true" == os.Getenv("SKN_DEBUG")) // "true" / "false"
 var logs = log.New(os.Stdout, "[DEBUG] ", log.Lmicroseconds|log.Lshortfile)
 
 func DebugLog(args ...any) {
