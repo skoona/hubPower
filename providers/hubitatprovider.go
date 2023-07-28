@@ -14,6 +14,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -39,6 +40,7 @@ type hubitat struct {
 	templates         map[string]string
 	eventListenerChan chan entities.DeviceEventStream
 	listener          http.Server
+	shutdownGroup     sync.WaitGroup
 }
 
 var _ (interfaces.HubProvider) = (*hubitat)(nil)
@@ -59,6 +61,7 @@ func NewHubitatProvider(ctx context.Context, hubHost *entities.HubHost) interfac
 			DeviceEventHistoryById:    "http://IPADDRESS/apps/api/56/devices/DEVICEID/events?access_token=TOKEN",
 			CreateDeviceEventListener: "http://IPADDRESS/apps/api/56/postURLURI?access_token=TOKEN",
 		},
+		shutdownGroup: sync.WaitGroup{},
 	}
 
 	return provider
@@ -238,6 +241,7 @@ func (h *hubitat) CreateDeviceEventListener() bool {
 		commons.DebugLog("HubitatProvider::CreateDeviceEventListener() Listener Starting")
 		event := entities.DeviceEventStream{}
 		mux := http.NewServeMux()
+		p.shutdownGroup.Add(1)
 
 		mux.HandleFunc("/hubEvents", func(w http.ResponseWriter, r *http.Request) {
 			body, _ := io.ReadAll(r.Body)
@@ -269,6 +273,7 @@ func (h *hubitat) CreateDeviceEventListener() bool {
 				fmt.Printf("error running http server: %s\n", err)
 			}
 		}
+		p.shutdownGroup.Done()
 		commons.DebugLog("HubitatProvider::CreateDeviceEventListener() Listener Ended")
 	}(h)
 
@@ -305,7 +310,8 @@ func (h *hubitat) Shutdown() {
 		if err != nil {
 			commons.DebugLog(err.Error())
 		}
-		time.Sleep(4 * time.Second) // give server time to exit
+
+		h.shutdownGroup.Wait() // give/wait server time to exit
 		close(h.eventListenerChan)
 	}
 	commons.DebugLog("HubitatProvider::Shutdown() END")

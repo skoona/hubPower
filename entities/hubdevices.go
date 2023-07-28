@@ -31,22 +31,22 @@ type Device struct {
 }
 
 type DeviceDetails struct {
-	Name         string      `json:"name"`
-	Label        string      `json:"label"`
-	Type         string      `json:"type"`
-	Id           string      `json:"id"`
-	Date         *string     `json:"date"`
-	Model        interface{} `json:"model"`
-	Manufacturer interface{} `json:"manufacturer"`
-	Room         string      `json:"room"`
-	Capabilities []string    `json:"capabilities"`
+	Name         string   `json:"name"`
+	Label        string   `json:"label"`
+	Type         string   `json:"type"`
+	Id           string   `json:"id"`
+	Date         *string  `json:"date"`
+	Model        string   `json:"model"`
+	Manufacturer string   `json:"manufacturer"`
+	Room         string   `json:"room"`
+	Capabilities []string `json:"capabilities"`
 	Attributes   struct {
 		Voltage   string      `json:"voltage"`
 		DataType  string      `json:"dataType"`
 		Values    interface{} `json:"values"`
 		Energy    string      `json:"energy"`
 		Amperage  string      `json:"amperage"`
-		Frequency interface{} `json:"frequency"`
+		Frequency string      `json:"frequency"`
 		Switch    string      `json:"switch"`
 		Power     string      `json:"power"`
 	} `json:"attributes"`

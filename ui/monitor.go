@@ -4,10 +4,8 @@ import (
 	"context"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/theme"
-	"fyne.io/fyne/v2/widget"
 	"github.com/skoona/hubPower/commons"
 	"github.com/skoona/hubPower/entities"
 	"github.com/skoona/hubPower/interfaces"
@@ -48,10 +46,10 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 				}
 				chart.SetBottomLeftLabel(hub.Name + "@" + hub.IpAddress + " has " + strconv.Itoa(len(hub.DeviceDetails)) + " devices")
 
-				tab := container.NewTabItemWithIcon(device.Label, theme.InfoIcon(),
+				tab := container.NewTabItemWithIcon(device.Label, commons.SknSelectThemedResource("sensorOn"),
 					container.NewAppTabs(
 						container.NewTabItemWithIcon("History", theme.HistoryIcon(), chart),
-						container.NewTabItemWithIcon("Detailed", theme.VisibilityIcon(), widget.NewLabelWithData(binding.FloatToStringWithFormat(device.BWattValue, "%4.1f"))), // v.DetailPage(knowledge, v.bondedUpsStatus[host.Name])),
+						container.NewTabItemWithIcon("Detailed", theme.VisibilityIcon(), v.DeviceCard(device)),
 					),
 				)
 				hostTabs.Append(tab)
