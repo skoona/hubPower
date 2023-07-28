@@ -50,6 +50,7 @@ func NewViewProvider(ctx context.Context, cfg interfaces.Configuration, service 
 	view.mainWindow.Resize(fyne.NewSize(726, 448))
 	view.mainWindow.SetCloseIntercept(func() { view.mainWindow.Hide() })
 	view.mainWindow.SetMaster()
+	view.mainWindow.CenterOnScreen()
 	view.mainWindow.SetIcon(commons.SknSelectThemedResource(commons.AppIcon))
 
 	view.prefsWindow.Resize(fyne.NewSize(632, 572))
@@ -63,9 +64,10 @@ func NewViewProvider(ctx context.Context, cfg interfaces.Configuration, service 
 }
 
 // ShowMainPage display the primary application page
-func (v *viewProvider) ShowMainPage() {
+func (v *viewProvider) ShowMainPage() fyne.Window {
 	v.mainWindow.SetContent(v.MonitorPage())
 	v.mainWindow.Show()
+	return v.mainWindow
 }
 
 // ShowPrefsPage displays teh settings por preferences page

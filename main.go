@@ -21,8 +21,8 @@ func main() {
 	var err error
 	commons.ShutdownSignals = make(chan os.Signal, 1)
 
-	ctx, cancelApc := context.WithCancel(context.Background())
-	defer cancelApc()
+	ctx, cancelHub := context.WithCancel(context.Background())
+	//defer cancelHub()
 
 	gui := app.NewWithID("net.skoona.projects.ggapcmon")
 	commons.DebugLog("main()::RootURI: ", gui.Storage().RootURI().Path())
@@ -31,7 +31,7 @@ func main() {
 	go func(stopFlag chan os.Signal, a fyne.App) {
 		signal.Notify(stopFlag, syscall.SIGINT, syscall.SIGTERM)
 		sig := <-stopFlag // wait on ctrl-c
-		cancelApc()
+		cancelHub()
 		time.Sleep(5 * time.Second)
 		err = fmt.Errorf("Shutdown Signal Received: %v", sig.String())
 		a.Quit()
@@ -41,7 +41,7 @@ func main() {
 	if err != nil {
 		dialog.ShowError(fmt.Errorf("main()::NewConfig(): %v", err), gui.NewWindow("ggapcmon Configuration Failed"))
 		commons.ShutdownSignals <- syscall.SIGINT
-		//cfg.ResetConfig()
+		cfg.ResetConfig()
 	}
 	//cfg.ResetConfig()
 
@@ -54,7 +54,13 @@ func main() {
 	vp := ui.NewViewProvider(ctx, cfg, service)
 	defer vp.Shutdown()
 
-	vp.ShowMainPage()
+	win := vp.ShowMainPage()
+	win.SetOnClosed(func() {
+		if ctx.Err() == nil {
+			commons.DebugLog("main::OnClose() window exit and cancel triggered")
+			cancelHub()
+		}
+	})
 	gui.Run()
 	commons.DebugLog("main::Shutdown Ended ")
 }

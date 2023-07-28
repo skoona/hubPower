@@ -7,9 +7,10 @@ A application to display voltage and wattage from a Hubitat Home Automatin Contr
 
 ### Project Layout
 
-    Enable debug logging via environment var: `export SKN_DEBUG="true"`
+    Specify Hubitat Hub's ACCESS TOKEN via environment var: `export HUBITAT_TOKEN="example-9178-4976-bd10-only"`
     Specify Hubitat Hub's IpAddress via environment var: `export HUBITAT_IP="10.100.1.41"`
     Specify this machine IP via environment var: `export TRUSTED_IP="10.100.1.5"`
+    Enable debug logging via environment var: `export SKN_DEBUG="true"`
 
 
 ```text

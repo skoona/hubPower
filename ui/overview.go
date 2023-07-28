@@ -64,11 +64,15 @@ func (v *viewProvider) OverviewPage() *fyne.Container {
 
 			case 2: // descriptions
 				z := ""
-				for _, dv := range devices {
-					vac, _ := dv.BVoltageValue.Get()
-					watts, _ := dv.BWattValue.Get()
-					str := fmt.Sprintf("### Id:%s %11s %s VAC: %3v Watts: %4.1f\n\n", dv.Id, dv.Label, dv.Name, vac, watts)
-					z += str
+				if !host.IsEnabled() {
+					z = "## no data available until Hub is enabled."
+				} else {
+					for _, dv := range devices {
+						vac, _ := dv.BVoltageValue.Get()
+						watts, _ := dv.BWattValue.Get()
+						str := fmt.Sprintf("### Id:%s %11s %s VAC: %3v Watts: %4.1f\n\n", dv.Id, dv.Label, dv.Name, vac, watts)
+						z += str
+					}
 				}
 				object.(*fyne.Container).Objects[0].Hide()
 				object.(*fyne.Container).Objects[1].(*widget.RichText).ParseMarkdown(z)

@@ -87,6 +87,13 @@ func (v *viewProvider) PreferencesPage() *fyne.Container {
 	dIp := widget.NewEntry()
 	dIp.SetText(v.host.IpAddress)
 
+	tIp := widget.NewEntry()
+	tIp.SetText(commons.DefaultIp())
+
+	hid := widget.NewEntry()
+	hid.Disable()
+	hid.SetText(v.host.Id)
+
 	gPeriod := widget.NewEntry()
 	gPeriod.SetText(strconv.Itoa(int(v.host.GraphingSamplePeriod)))
 
@@ -98,28 +105,46 @@ func (v *viewProvider) PreferencesPage() *fyne.Container {
 			{Text: "is enabled", Widget: enable},
 			{Text: "name", Widget: dName},
 			{Text: "ip address", Widget: dIp},
+			{Text: "This ip address", Widget: tIp, HintText: "defaults if blank"},
 			{Text: "graph averaging count", Widget: gPeriod},
-			{Text: "access token", Widget: dAccess},
+			{Text: "access token", Widget: dAccess, HintText: "defaults if blank"},
+			{Text: "ID", Widget: hid},
 		},
 		SubmitText: "Apply edits",
 	}
 	form.OnSubmit = func() { // Apply optional, handle form submission
-		if v.host.Name != dName.Text {
+		var defaultListenerIp string
+		if tIp.Text == "" {
+			defaultListenerIp = commons.DefaultIp()
+		} else {
+			defaultListenerIp = tIp.Text
+		}
+		var defaultAccesstoken string
+		if dAccess.Text == "" {
+			defaultAccesstoken = commons.HubitatAccessToken()
+		} else {
+			defaultAccesstoken = dAccess.Text
+		}
+		if v.host.Id != hid.Text {
 			gx, _ := strconv.Atoi(gPeriod.Text)
-			v.host = entities.NewHubHost(
+			v.host = entities.NewHubHost( // new
 				dName.Text,
 				dIp.Text,
-				dAccess.Text,
-				commons.DefaultIp(),
+				defaultAccesstoken,
+				defaultListenerIp,
 				time.Duration(gx),
 				enable.Checked,
 			)
 		} else {
-			v.host.IpAddress = dIp.Text
-			v.host.AccessToken = dAccess.Text
 			x, _ := strconv.Atoi(gPeriod.Text)
-			v.host.GraphingSamplePeriod = time.Duration(x)
-			v.host.Enabled = enable.Checked
+			v.host.Update( // existing
+				dName.Text,
+				dIp.Text,
+				dAccess.Text,
+				defaultListenerIp,
+				time.Duration(x),
+				enable.Checked,
+			)
 		}
 		v.cfg.Apply(v.host).Save()
 		v.hosts = v.cfg.Hosts()
@@ -129,7 +154,7 @@ func (v *viewProvider) PreferencesPage() *fyne.Container {
 
 	table.OnSelected = func(id widget.TableCellID) {
 		row := id.Row - 1
-		if row > len(v.hosts) {
+		if row > len(v.hosts) || id.Row == 0 {
 			commons.DebugLog("Preferences::Table row invalid: ", row)
 			return
 		}
@@ -137,6 +162,8 @@ func (v *viewProvider) PreferencesPage() *fyne.Container {
 
 		dName.SetText(v.host.Name)
 		dIp.SetText(v.host.IpAddress)
+		tIp.SetText(v.host.ThisIpAddress)
+		hid.SetText(v.host.Id)
 		dAccess.SetText(v.host.AccessToken)
 		z := strconv.Itoa(int(v.host.GraphingSamplePeriod))
 		gPeriod.SetText(z)
@@ -171,6 +198,7 @@ func (v *viewProvider) PreferencesPage() *fyne.Container {
 			container.NewHBox(
 				container.NewHBox(
 					widget.NewButtonWithIcon("add selected", theme.ContentAddIcon(), func() {
+						hid.SetText("new") // enable OnSubmit to treat this as a new record
 						form.OnSubmit()
 						v.prefsAddAction()
 					}),

@@ -26,12 +26,11 @@ func NewConfig(prefs fyne.Preferences) (interfaces.Configuration, error) {
 	var err error
 	var hubHosts []*entities.HubHost
 
+	// create a default
 	defaultHubHosts := []*entities.HubHost{
-		entities.NewHubHost("Scotts", commons.HubitatIP(), "a79c07db-9178-4976-bd10-428aa0d3d159", commons.DefaultIp(), 5, false),
+		entities.NewHubHost("Skoona's", commons.HubitatIP(), commons.HubitatAccessToken(), commons.DefaultIp(), 5, false),
 	}
 
-	commons.DebugLog("This IpAddress: ", commons.DefaultIp())
-	commons.DebugLog("Hubitat IpAddress: ", commons.HubitatIP())
 	// retrieve existing
 	hubHostString := prefs.String(HubHostsPrefs)
 	if hubHostString != "" {

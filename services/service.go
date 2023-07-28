@@ -32,10 +32,12 @@ func (s *service) begin() error {
 
 	// initialize Hubs
 	for _, host := range s.cfg.Hosts() {
-		hpv := providers.NewHubitatProvider(s.ctx, host)
-		s.hubProviders = append(s.hubProviders, hpv)
-		host.DeviceDetails = append(host.DeviceDetails, hpv.DeviceDetailsList()...)
-		hpv.CreateDeviceEventListener()
+		if host.IsEnabled() {
+			hpv := providers.NewHubitatProvider(s.ctx, host)
+			s.hubProviders = append(s.hubProviders, hpv)
+			host.DeviceDetails = append(host.DeviceDetails, hpv.DeviceDetailsList()...)
+			hpv.CreateDeviceEventListener()
+		}
 	}
 
 	return err

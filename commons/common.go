@@ -15,11 +15,12 @@ import (
 )
 
 const (
-	AppIcon         = "sensorOn"
-	PreferencesIcon = "ThumbsUp"
-	TrustedIpKey    = "TRUSTED_IP"
-	HubIpAddressKey = "HUBITAT_IP"
-	DebugKey        = "SKN_DEBUG"
+	AppIcon           = "sensorOn"
+	PreferencesIcon   = "ThumbsUp"
+	TrustedIpKey      = "TRUSTED_IP"
+	HubIpAddressKey   = "HUBITAT_IP"
+	HubAccessTokenKey = "HUBITAT_TOKEN"
+	DebugKey          = "SKN_DEBUG"
 )
 
 // ShutdownSignals alternate panic() implementation, causes an orderly shutdown
@@ -123,6 +124,14 @@ func HubitatIP() string {
 	ip := os.Getenv(HubIpAddressKey)
 	if ip == "" {
 		ip = "10.100.1.41"
+	}
+	return ip
+}
+
+func HubitatAccessToken() string {
+	ip := os.Getenv(HubAccessTokenKey)
+	if ip == "" {
+		ip = "ACCESS-TOKEN-REQUIRED"
 	}
 	return ip
 }
