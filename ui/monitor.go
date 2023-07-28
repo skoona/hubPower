@@ -27,78 +27,83 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 	var chart sknlinechart.LineChart
 	var err error
 	for _, hub := range v.hosts {
-		for _, device := range hub.DeviceDetails {
-			// GraphSamplingPeriod for Charts
-			v.chartPageData[hub.Name] = map[string]interfaces.GraphPointSmoothing{}
-			for _, key := range v.chartKeys {
-				intf := entities.NewGraphAverage(hub.Name, key, hub.GraphingSamplePeriod)
-				v.chartPageData[hub.Name][key] = intf
-			}
-			// for chart page updates
-			data := map[string][]*sknlinechart.ChartDatapoint{}
-			chart, err = sknlinechart.NewLineChart(
-				hub.Name,
-				"",
-				&data,
-			)
-			if err != nil {
-				dialog.ShowError(err, v.mainWindow)
-				commons.ShutdownSignals <- syscall.SIGINT
-			}
-			chart.SetBottomLeftLabel(hub.Name + "@" + hub.IpAddress + " has " + strconv.Itoa(len(hub.DeviceDetails)) + " devices")
-
-			tab := container.NewTabItemWithIcon(device.Label, theme.InfoIcon(),
-				container.NewAppTabs(
-					container.NewTabItemWithIcon("History", theme.HistoryIcon(), chart),
-					container.NewTabItemWithIcon("Detailed", theme.VisibilityIcon(), widget.NewLabelWithData(binding.FloatToStringWithFormat(device.BWattValue, "%4.1f"))), // v.DetailPage(knowledge, v.bondedUpsStatus[host.Name])),
-				),
-			)
-			hostTabs.Append(tab)
-		}
-
-		go func(ctxx context.Context, vv *viewProvider, host *entities.HubHost, lc sknlinechart.LineChart) { // shutdown monitor
-			eventChannel := vv.service.HubEventsMessageChannel(host.Id)
-			commons.DebugLog("ViewProvider::MonitorPage() listener BEGIN")
-		Gone:
-			for {
-				select {
-				case <-ctxx.Done():
-					commons.DebugLog("ViewProvider::MonitorPage() shutdown listener: ", ctxx.Err().Error())
-					break Gone
-
-				case ev := <-eventChannel:
-					commons.DebugLog("ViewProvider::MonitorPage() listener received: ", ev)
-					for _, device := range host.DeviceDetails {
-						if device.Id == ev.Content.DeviceId {
-							if ev.Content.Name == "power" {
-								z, _ := strconv.ParseFloat(ev.Content.Value, 32)
-								err := device.BWattValue.Set(z)
-								if err != nil {
-									commons.DebugLog("ViewProvider::MonitorPage() listener(", ev.Content.Name, ") float parsing error: ", err.Error())
-								}
-								d64 := vv.chartPageData[host.Name]["Watts"].AddValue(z)
-								point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorYellow, time.Now().Format(time.RFC1123))
-								lc.ApplyDataPoint("Watts", &point)
-							} else {
-								z, _ := strconv.ParseInt(ev.Content.Value, 10, 32)
-								err := device.BVoltageValue.Set(int(z))
-								if err != nil {
-									commons.DebugLog("ViewProvider::MonitorPage() listener(", ev.Content.Name, ") int parsing error: ", err.Error())
-								}
-								d64 := vv.chartPageData[host.Name]["Voltage"].AddValue(float64(z))
-								point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorGreen, time.Now().Format(time.RFC1123))
-								lc.ApplyDataPoint("Voltage", &point)
-							}
-							break
-						}
-					}
-
-				default:
-					time.Sleep(100 * time.Millisecond)
+		if hub.IsEnabled() {
+			for _, device := range hub.DeviceDetails {
+				// GraphSamplingPeriod for Charts
+				v.chartPageData[hub.Name] = map[string]interfaces.GraphPointSmoothing{}
+				for _, key := range v.chartKeys {
+					intf := entities.NewGraphAverage(hub.Name, key, hub.GraphingSamplePeriod)
+					v.chartPageData[hub.Name][key] = intf
 				}
+				// for chart page updates
+				data := map[string][]*sknlinechart.ChartDatapoint{}
+				chart, err = sknlinechart.NewLineChart(
+					hub.Name,
+					"",
+					&data,
+				)
+				if err != nil {
+					dialog.ShowError(err, v.mainWindow)
+					commons.ShutdownSignals <- syscall.SIGINT
+				}
+				chart.SetBottomLeftLabel(hub.Name + "@" + hub.IpAddress + " has " + strconv.Itoa(len(hub.DeviceDetails)) + " devices")
+
+				tab := container.NewTabItemWithIcon(device.Label, theme.InfoIcon(),
+					container.NewAppTabs(
+						container.NewTabItemWithIcon("History", theme.HistoryIcon(), chart),
+						container.NewTabItemWithIcon("Detailed", theme.VisibilityIcon(), widget.NewLabelWithData(binding.FloatToStringWithFormat(device.BWattValue, "%4.1f"))), // v.DetailPage(knowledge, v.bondedUpsStatus[host.Name])),
+					),
+				)
+				hostTabs.Append(tab)
 			}
-			commons.DebugLog("HubitatProvider::CreateDeviceEventListener() publisher END")
-		}(v.ctx, v, hub, chart)
+
+			go func(ctxx context.Context, vv *viewProvider, host *entities.HubHost, lc sknlinechart.LineChart) { // shutdown monitor
+				eventChannel := vv.service.HubEventsMessageChannel(host.Id)
+				commons.DebugLog("ViewProvider::MonitorPage() listener BEGIN")
+			Gone:
+				for {
+					select {
+					case <-ctxx.Done():
+						commons.DebugLog("ViewProvider::MonitorPage() shutdown listener: ", ctxx.Err().Error())
+						break Gone
+
+					case ev := <-eventChannel:
+						commons.DebugLog("ViewProvider::MonitorPage(", host.Name, ") listener received: ", ev)
+					found:
+						for _, device := range host.DeviceDetails {
+							if device.Id == ev.Content.DeviceId {
+								switch ev.Content.Name {
+								case "power":
+									z, _ := strconv.ParseFloat(ev.Content.Value, 32)
+									err := device.BWattValue.Set(z)
+									if err != nil {
+										commons.DebugLog("ViewProvider::MonitorPage() listener(", ev.Content.Name, ") float parsing error: ", err.Error())
+									}
+									d64 := vv.chartPageData[host.Name]["Watts"].AddValue(z)
+									point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorYellow, time.Now().Format(time.RFC1123))
+									lc.ApplyDataPoint("Watts", &point)
+									break found
+								case "voltage":
+									z, _ := strconv.ParseInt(ev.Content.Value, 10, 32)
+									err := device.BVoltageValue.Set(int(z))
+									if err != nil {
+										commons.DebugLog("ViewProvider::MonitorPage() listener(", ev.Content.Name, ") int parsing error: ", err.Error())
+									}
+									d64 := vv.chartPageData[host.Name]["Voltage"].AddValue(float64(z))
+									point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorGreen, time.Now().Format(time.RFC1123))
+									lc.ApplyDataPoint("Voltage", &point)
+									break found
+								}
+							}
+						}
+
+					default:
+						time.Sleep(100 * time.Millisecond)
+					}
+				}
+				commons.DebugLog("HubitatProvider::CreateDeviceEventListener() publisher END")
+			}(v.ctx, v, hub, chart)
+		}
 	}
 
 	return container.NewPadded(hostTabs)

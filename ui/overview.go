@@ -33,7 +33,7 @@ func (v *viewProvider) OverviewPage() *fyne.Container {
 				object.(*fyne.Container).Objects[0].Hide()
 				switch id.Col {
 				case 0:
-					object.(*fyne.Container).Objects[1].(*widget.RichText).ParseMarkdown("## State")
+					object.(*fyne.Container).Objects[1].(*widget.RichText).ParseMarkdown("")
 					object.(*fyne.Container).Objects[1].Show()
 				case 1:
 					object.(*fyne.Container).Objects[1].(*widget.RichText).ParseMarkdown("## Hub")
@@ -48,7 +48,11 @@ func (v *viewProvider) OverviewPage() *fyne.Container {
 			devices := host.DeviceDetails
 			switch id.Col {
 			case 0: // State
-				object.(*fyne.Container).Objects[0].(*widget.Icon).SetResource(commons.SknSelectThemedResource("online"))
+				icon := "ThumbsUp"
+				if !host.IsEnabled() {
+					icon = "ThumbsDown"
+				}
+				object.(*fyne.Container).Objects[0].(*widget.Icon).SetResource(commons.SknSelectThemedResource(icon))
 				object.(*fyne.Container).Objects[0].(*widget.Icon).Resize(fyne.NewSize(40, 40))
 				object.(*fyne.Container).Objects[0].Show()
 				object.(*fyne.Container).Objects[1].Hide()
@@ -81,7 +85,7 @@ func (v *viewProvider) OverviewPage() *fyne.Container {
 		},
 	)
 
-	table.SetColumnWidth(0, 56)  // icon
+	table.SetColumnWidth(0, 42)  // icon
 	table.SetColumnWidth(1, 96)  // status
 	table.SetColumnWidth(2, 432) // description
 	for idx := range v.hosts {

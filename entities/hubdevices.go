@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fyne.io/fyne/v2/data/binding"
+	"github.com/skoona/hubPower/commons"
 	"reflect"
 )
 
@@ -56,10 +57,17 @@ type DeviceDetails struct {
 	BVoltageValue binding.Int   `json:"-"`
 }
 
-func (d DeviceDetails) AttrByKey(key string) interface{} {
+func (d *DeviceDetails) AttrByKey(key string) interface{} {
 	r := reflect.ValueOf(d.Attributes)
-	f := reflect.Indirect(r).FieldByName(key)
-	return f.Interface()
+	if r.IsValid() && !r.IsZero() {
+		f := reflect.Indirect(r).FieldByName(key)
+		if !f.IsValid() {
+			commons.DebugLog("DeviceDetails::AttrByKey(", key, ") IsInvalid")
+			return ""
+		}
+		return f.Interface()
+	}
+	return ""
 }
 
 type DeviceEvent struct {

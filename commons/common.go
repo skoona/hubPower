@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	AppIcon         = "apcupsd"
-	PreferencesIcon = "preferences"
+	AppIcon         = "sensorOn"
+	PreferencesIcon = "ThumbsUp"
 	TrustedIpKey    = "TRUSTED_IP"
 	HubIpAddressKey = "HUBITAT_IP"
 	DebugKey        = "SKN_DEBUG"

@@ -47,7 +47,7 @@ func NewViewProvider(ctx context.Context, cfg interfaces.Configuration, service 
 		host:          hh[0],
 		chartKeys:     []string{"Watts", "Voltage"},
 	}
-	view.mainWindow.Resize(fyne.NewSize(726, 400))
+	view.mainWindow.Resize(fyne.NewSize(726, 448))
 	view.mainWindow.SetCloseIntercept(func() { view.mainWindow.Hide() })
 	view.mainWindow.SetMaster()
 	view.mainWindow.SetIcon(commons.SknSelectThemedResource(commons.AppIcon))
@@ -70,6 +70,8 @@ func (v *viewProvider) ShowMainPage() {
 
 // ShowPrefsPage displays teh settings por preferences page
 func (v *viewProvider) ShowPrefsPage() {
+	v.hosts = v.cfg.Hosts()
+	v.host = v.hosts[0]
 	v.prefsWindow.SetContent(v.PreferencesPage())
 	v.prefsWindow.Show()
 }
@@ -79,21 +81,17 @@ func (v *viewProvider) Shutdown() {
 	commons.DebugLog("ViewProvider::Shutdown() called.")
 }
 
-/*
 // prefsAddAction adds or replaces the host in the form
 func (v *viewProvider) prefsAddAction() {
-	v.prfHostKeys = v.cfg.HostKeys()
+	v.cfg.AddHost(v.host)
 	v.ShowPrefsPage()
-	v.prfStatusLine.SetText("Host " + v.prfHost.Name + " was added")
+	v.prfStatusLine.SetText("Host " + v.host.Name + " was added")
 }
 
 // prefsDelAction deletes the select host
 func (v *viewProvider) prefsDelAction() {
-	n := v.prfHost.Name
-	v.cfg.Remove(v.prfHost.Name)
-	v.prfHostKeys = v.cfg.HostKeys()
-	v.prfHost = v.cfg.HostByName(v.prfHostKeys[0])
+	n := v.host.Name
+	v.cfg.Remove(v.host.Id)
 	v.ShowPrefsPage()
 	v.prfStatusLine.SetText("Host " + n + " was removed")
 }
-*/

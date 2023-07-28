@@ -41,7 +41,7 @@ func main() {
 	if err != nil {
 		dialog.ShowError(fmt.Errorf("main()::NewConfig(): %v", err), gui.NewWindow("ggapcmon Configuration Failed"))
 		commons.ShutdownSignals <- syscall.SIGINT
-		cfg.ResetConfig()
+		//cfg.ResetConfig()
 	}
 	//cfg.ResetConfig()
 

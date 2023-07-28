@@ -50,12 +50,14 @@ func sknImageByName(alias string, themed bool, inverted bool) *canvas.Image {
 	var selected fyne.Resource
 
 	switch alias {
-	case "apcupsd":
-		selected = resourceApcupsdPng
-	case "preferences":
-		selected = resourceGapcprefsPng
+	case "sensorOn":
+		selected = resourceSensorsOnMbr24pxSvg
+	case "ThumbsUp":
+		selected = resourceThumbsUpMdr24pxSvg
+	case "ThumbsDown":
+		selected = resourceThumbsDownMdr24pxSvg
 	default:
-		selected = resourceApcupsdPng
+		selected = resourceTimeLapseMbr24pxSvg
 	}
 
 	image := canvas.NewImageFromResource(selected)

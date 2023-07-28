@@ -7,7 +7,7 @@ import (
 	"github.com/skoona/hubPower/commons"
 	"github.com/skoona/hubPower/entities"
 	"github.com/skoona/hubPower/interfaces"
-	"strconv"
+	"strings"
 )
 
 const (
@@ -27,7 +27,7 @@ func NewConfig(prefs fyne.Preferences) (interfaces.Configuration, error) {
 	var hubHosts []*entities.HubHost
 
 	defaultHubHosts := []*entities.HubHost{
-		entities.NewHubHost("Scotts", commons.HubitatIP(), "a79c07db-9178-4976-bd10-428aa0d3d159", commons.DefaultIp(), 5),
+		entities.NewHubHost("Scotts", commons.HubitatIP(), "a79c07db-9178-4976-bd10-428aa0d3d159", commons.DefaultIp(), 5, false),
 	}
 
 	commons.DebugLog("This IpAddress: ", commons.DefaultIp())
@@ -51,12 +51,10 @@ func NewConfig(prefs fyne.Preferences) (interfaces.Configuration, error) {
 		hubHosts = defaultHubHosts
 	}
 	for _, h := range hubHosts {
-		h.ThisIpAddress = commons.DefaultIp() + ":2600"
+		h.ListenerUri = strings.Replace("http://IPADDR:2600/hubEvents", "IPADDR", commons.DefaultIp(), 1)
 		for _, dv := range h.DeviceDetails {
 			dv.BWattValue = binding.NewFloat()
 			dv.BVoltageValue = binding.NewInt()
-			z, _ := strconv.Atoi(dv.AttrByKey("Voltage").(string))
-			dv.BVoltageValue.Set(z)
 		}
 	}
 
@@ -86,7 +84,18 @@ func (c *config) Hosts() []*entities.HubHost {
 	return c.hubs
 }
 func (c *config) Apply(h *entities.HubHost) interfaces.Configuration {
-	c.hubs = append(c.hubs, h)
+	index := -1
+	for idx, hub := range c.hubs {
+		if h.Id == hub.Id {
+			index = idx
+			break
+		}
+	}
+	if index != -1 {
+		c.hubs[index] = h
+	} else {
+		c.hubs = append(c.hubs, h)
+	}
 	return c
 }
 func (c *config) AddHost(h *entities.HubHost) {
@@ -105,15 +114,17 @@ func (c *config) Remove(id string) {
 	if id == "" {
 		return
 	}
-	index := 0
+	index := -1
 	for idx, h := range c.hubs {
 		if h.Id == id {
 			index = idx
 			break
 		}
 	}
-	commons.RemoveIndexFromSlice(index, c.hubs)
-	c.Save()
+	if index != -1 {
+		c.hubs = commons.RemoveIndexFromSlice(index, c.hubs)
+		c.Save()
+	}
 }
 func (c *config) HostIds() []string {
 	ids := []string{}

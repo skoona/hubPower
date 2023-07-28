@@ -12,20 +12,25 @@ type HubHost struct {
 	IpAddress            string
 	AccessToken          string
 	ListenerUri          string // "http://IPADDR:2600/hubEvents"
-	ThisIpAddress        string
 	GraphingSamplePeriod time.Duration
 	DeviceDetails        []*DeviceDetails `json:"-"`
+	Enabled              bool
 }
 
-func NewHubHost(name, ipaddress, accessToken, listenOnIp string, graphPeriod time.Duration) *HubHost {
+func NewHubHost(name, ipaddress, accessToken, listenOnIp string, graphPeriod time.Duration, enabled bool) *HubHost {
 	id, _ := uuid.NewUUID()
 	return &HubHost{
-		Id:                   id.String(),
-		Name:                 name,
-		IpAddress:            ipaddress,
-		AccessToken:          accessToken,
+		Id:          id.String(),
+		Name:        name,
+		IpAddress:   ipaddress,
+		AccessToken: accessToken,
+		// see config.go:56ish
 		ListenerUri:          strings.Replace("http://IPADDR:2600/hubEvents", "IPADDR", listenOnIp, 1),
-		ThisIpAddress:        listenOnIp + ":2600",
 		GraphingSamplePeriod: graphPeriod,
+		Enabled:              enabled,
 	}
+}
+
+func (h *HubHost) IsEnabled() bool {
+	return h.Enabled
 }

@@ -153,10 +153,12 @@ func (h *hubitat) DeviceDetailsList() []*entities.DeviceDetails {
 	}
 	for _, device := range devices {
 		if device.BWattValue == nil {
+			x, _ := strconv.ParseFloat(device.AttrByKey("Power").(string), 32)
 			device.BWattValue = binding.NewFloat()
+			_ = device.BWattValue.Set(x)
 			z, _ := strconv.Atoi(device.AttrByKey("Voltage").(string))
 			device.BVoltageValue = binding.NewInt()
-			device.BVoltageValue.Set(z)
+			_ = device.BVoltageValue.Set(z)
 		}
 	}
 	commons.DebugLog("DeviceDetailsList: devices ", devices)
@@ -256,9 +258,9 @@ func (h *hubitat) CreateDeviceEventListener() bool {
 			err = json.NewEncoder(w).Encode(&HubError{Error: true, Type: "InvalidRequest", Message: "not supported"})
 		})
 
-		commons.DebugLog("HubitatProvider::CreateDeviceEventListener() Servers IP Address: ", p.host.ThisIpAddress)
+		commons.DebugLog("HubitatProvider::CreateDeviceEventListener() Servers Listening on IpAddress: 0.0.0.0:2600")
 		p.listener = http.Server{
-			Addr:    p.host.ThisIpAddress,
+			Addr:    "0.0.0.0:2600",
 			Handler: mux,
 		}
 		p.online = true
