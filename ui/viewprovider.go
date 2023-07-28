@@ -47,7 +47,7 @@ func NewViewProvider(ctx context.Context, cfg interfaces.Configuration, service 
 		host:          hh[0],
 		chartKeys:     []string{"Watts", "Voltage"},
 	}
-	view.mainWindow.Resize(fyne.NewSize(632, 432))
+	view.mainWindow.Resize(fyne.NewSize(726, 400))
 	view.mainWindow.SetCloseIntercept(func() { view.mainWindow.Hide() })
 	view.mainWindow.SetMaster()
 	view.mainWindow.SetIcon(commons.SknSelectThemedResource(commons.AppIcon))

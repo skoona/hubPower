@@ -24,7 +24,8 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 	)
 
 	//v.handleUpdatesForMonitorPage(host, v.service, status, events, chart, knowledge)
-
+	var chart sknlinechart.LineChart
+	var err error
 	for _, hub := range v.hosts {
 		for _, device := range hub.DeviceDetails {
 			// GraphSamplingPeriod for Charts
@@ -35,7 +36,7 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 			}
 			// for chart page updates
 			data := map[string][]*sknlinechart.ChartDatapoint{}
-			chart, err := sknlinechart.NewLineChart(
+			chart, err = sknlinechart.NewLineChart(
 				hub.Name,
 				"",
 				&data,
@@ -55,7 +56,7 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 			hostTabs.Append(tab)
 		}
 
-		go func(ctxx context.Context, vv *viewProvider, host *entities.HubHost) { // shutdown monitor
+		go func(ctxx context.Context, vv *viewProvider, host *entities.HubHost, lc sknlinechart.LineChart) { // shutdown monitor
 			eventChannel := vv.service.HubEventsMessageChannel(host.Id)
 			commons.DebugLog("ViewProvider::MonitorPage() listener BEGIN")
 		Gone:
@@ -66,13 +67,27 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 					break Gone
 
 				case ev := <-eventChannel:
-					commons.DebugLog("ViewProvider::MonitorPage() shutdown listener received: ", ev)
+					commons.DebugLog("ViewProvider::MonitorPage() listener received: ", ev)
 					for _, device := range host.DeviceDetails {
 						if device.Id == ev.Content.DeviceId {
-							z, _ := strconv.ParseFloat(ev.Content.Value, 32)
-							err := device.BWattValue.Set(z)
-							if err != nil {
-								commons.DebugLog("ViewProvider::MonitorPage() shutdown listener(", ev.Content.Name, ") float parsing error: ", err.Error())
+							if ev.Content.Name == "power" {
+								z, _ := strconv.ParseFloat(ev.Content.Value, 32)
+								err := device.BWattValue.Set(z)
+								if err != nil {
+									commons.DebugLog("ViewProvider::MonitorPage() listener(", ev.Content.Name, ") float parsing error: ", err.Error())
+								}
+								d64 := vv.chartPageData[host.Name]["Watts"].AddValue(z)
+								point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorYellow, time.Now().Format(time.RFC1123))
+								lc.ApplyDataPoint("Watts", &point)
+							} else {
+								z, _ := strconv.ParseInt(ev.Content.Value, 10, 32)
+								err := device.BVoltageValue.Set(int(z))
+								if err != nil {
+									commons.DebugLog("ViewProvider::MonitorPage() listener(", ev.Content.Name, ") int parsing error: ", err.Error())
+								}
+								d64 := vv.chartPageData[host.Name]["Voltage"].AddValue(float64(z))
+								point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorGreen, time.Now().Format(time.RFC1123))
+								lc.ApplyDataPoint("Voltage", &point)
 							}
 							break
 						}
@@ -83,7 +98,7 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 				}
 			}
 			commons.DebugLog("HubitatProvider::CreateDeviceEventListener() publisher END")
-		}(v.ctx, v, hub)
+		}(v.ctx, v, hub, chart)
 	}
 
 	return container.NewPadded(hostTabs)

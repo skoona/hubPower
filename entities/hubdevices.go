@@ -1,6 +1,9 @@
 package entities
 
-import "fyne.io/fyne/v2/data/binding"
+import (
+	"fyne.io/fyne/v2/data/binding"
+	"reflect"
+)
 
 type DeviceList struct {
 	Id    string `json:"id"`
@@ -49,12 +52,15 @@ type DeviceDetails struct {
 	Commands []struct {
 		Command string `json:"command"`
 	} `json:"commands"`
-	BWattValue binding.Float `json:"-"`
+	BWattValue    binding.Float `json:"-"`
+	BVoltageValue binding.Int   `json:"-"`
 }
 
-deviceDetails :=
-func (dd *DeviceDetails)
-
+func (d DeviceDetails) AttrByKey(key string) interface{} {
+	r := reflect.ValueOf(d.Attributes)
+	f := reflect.Indirect(r).FieldByName(key)
+	return f.Interface()
+}
 
 type DeviceEvent struct {
 	DeviceId      string `json:"device_id"`

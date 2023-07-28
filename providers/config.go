@@ -7,6 +7,7 @@ import (
 	"github.com/skoona/hubPower/commons"
 	"github.com/skoona/hubPower/entities"
 	"github.com/skoona/hubPower/interfaces"
+	"strconv"
 )
 
 const (
@@ -53,6 +54,9 @@ func NewConfig(prefs fyne.Preferences) (interfaces.Configuration, error) {
 		h.ThisIpAddress = commons.DefaultIp() + ":2600"
 		for _, dv := range h.DeviceDetails {
 			dv.BWattValue = binding.NewFloat()
+			dv.BVoltageValue = binding.NewInt()
+			z, _ := strconv.Atoi(dv.AttrByKey("Voltage").(string))
+			dv.BVoltageValue.Set(z)
 		}
 	}
 

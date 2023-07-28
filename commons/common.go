@@ -19,11 +19,12 @@ const (
 	PreferencesIcon = "preferences"
 	TrustedIpKey    = "TRUSTED_IP"
 	HubIpAddressKey = "HUBITAT_IP"
+	DebugKey        = "SKN_DEBUG"
 )
 
 // ShutdownSignals alternate panic() implementation, causes an orderly shutdown
 var ShutdownSignals chan os.Signal
-var DebugLoggingEnabled = ("true" == os.Getenv("SKN_DEBUG")) // "true" / "false"
+var DebugLoggingEnabled = ("true" == os.Getenv(DebugKey)) // "true" / "false"
 var logs = log.New(os.Stdout, "[DEBUG] ", log.Lmicroseconds|log.Lshortfile)
 
 func DebugLog(args ...any) {

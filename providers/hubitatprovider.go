@@ -12,6 +12,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -153,6 +154,9 @@ func (h *hubitat) DeviceDetailsList() []*entities.DeviceDetails {
 	for _, device := range devices {
 		if device.BWattValue == nil {
 			device.BWattValue = binding.NewFloat()
+			z, _ := strconv.Atoi(device.AttrByKey("Voltage").(string))
+			device.BVoltageValue = binding.NewInt()
+			device.BVoltageValue.Set(z)
 		}
 	}
 	commons.DebugLog("DeviceDetailsList: devices ", devices)
