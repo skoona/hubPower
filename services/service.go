@@ -47,5 +47,14 @@ func (s *service) Shutdown() {
 	}
 }
 func (s *service) HubEventsMessageChannel(hubId string) chan entities.DeviceEventStream {
-	return s.hubProviders[0].GetEventListenerChannel()
+	var index int
+
+	for idx, device := range s.cfg.Hosts() {
+		if device.Id == hubId {
+			index = idx
+			break
+		}
+	}
+
+	return s.hubProviders[index].GetEventListenerChannel()
 }

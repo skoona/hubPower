@@ -15,7 +15,7 @@ import (
 func (v *viewProvider) OverviewPage() *fyne.Container {
 	table := widget.NewTable(
 		func() (int, int) { // length, columns
-			return len(v.cfgHubHosts) + 1, 3
+			return len(v.hosts) + 1, 3
 		},
 		func() fyne.CanvasObject { // created
 			i := widget.NewIcon(theme.StorageIcon())
@@ -26,8 +26,8 @@ func (v *viewProvider) OverviewPage() *fyne.Container {
 			return container.NewHBox(i, l) // issue container minSize is 0
 		},
 		func(id widget.TableCellID, object fyne.CanvasObject) { // update
-			// ICON - STATUS, ddd Outages, Last on dateString,
-			//                LineV , DDD % percent Charge
+			// ICON - NAME, Device Listing,
+			//              Device Listing,
 			// Row, Col
 			if id.Row == 0 { // headers
 				object.(*fyne.Container).Objects[0].Hide()
@@ -36,7 +36,7 @@ func (v *viewProvider) OverviewPage() *fyne.Container {
 					object.(*fyne.Container).Objects[1].(*widget.RichText).ParseMarkdown("## State")
 					object.(*fyne.Container).Objects[1].Show()
 				case 1:
-					object.(*fyne.Container).Objects[1].(*widget.RichText).ParseMarkdown("## Host")
+					object.(*fyne.Container).Objects[1].(*widget.RichText).ParseMarkdown("## Hub")
 					object.(*fyne.Container).Objects[1].Show()
 				case 2:
 					object.(*fyne.Container).Objects[1].(*widget.RichText).ParseMarkdown("## Device Information")
@@ -44,7 +44,7 @@ func (v *viewProvider) OverviewPage() *fyne.Container {
 				}
 				return
 			}
-			host := v.cfgHubHosts[id.Row-1]
+			host := v.hosts[id.Row-1]
 			devices := host.DeviceDetails
 			switch id.Col {
 			case 0: // State
@@ -60,10 +60,9 @@ func (v *viewProvider) OverviewPage() *fyne.Container {
 
 			case 2: // descriptions
 				z := ""
-				for idx, dv := range devices {
-					commons.DebugLog("Overview devices: ", idx, "=", dv)
+				for _, dv := range devices {
 					fv, _ := dv.BWattValue.Get()
-					str := fmt.Sprintf("### %s %s %s Watts: %4.1f\n\n", dv.Id, dv.Label, dv.Name, fv)
+					str := fmt.Sprintf("### Id:%s %s %s Watts: %4.1f\n\n", dv.Id, dv.Label, dv.Name, fv)
 					z += str
 				}
 				object.(*fyne.Container).Objects[0].Hide()
@@ -84,7 +83,7 @@ func (v *viewProvider) OverviewPage() *fyne.Container {
 	table.SetColumnWidth(0, 56)  // icon
 	table.SetColumnWidth(1, 96)  // status
 	table.SetColumnWidth(2, 432) // description
-	for idx := range v.cfgHubHosts {
+	for idx := range v.hosts {
 		table.SetRowHeight(idx, 72)
 	}
 

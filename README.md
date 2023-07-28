@@ -1,6 +1,6 @@
-# ggApcMon
+# HubPower
 
-A go refactor of gapcmon from source forge, originally written in C/Gtk2.
+A application to display voltage and wattage from a Hubitat Home Automatin Controller.
 
 
 
@@ -8,36 +8,56 @@ A go refactor of gapcmon from source forge, originally written in C/Gtk2.
 ### Project Layout
 
 Enable debug logging via environment var: `export GAPC_DEBUG="true"`
+Specify Hubitat Hub's IpAddress via environment var: `export HUBITAT_IP="10.100.1.41"`
+Specify this machine IP via environment var: `export TRUSTED_IP="10.100.1.5"`
 
 
 ```text
+├── FyneApp.toml
 ├── LICENSE
+├── Makefile
 ├── README.md
 ├── bin
-│   └── ggapcmon
-├── cmd
-│   ├── cli
-│   │   └── main.go
-│   └── gui
-│       └── main.go
+│   └── hubPower
+├── commons
+│   ├── common.go
+│   ├── imageResources.go
+│   └── images.go
 ├── docs
+│   ├── allDevices.json
+│   ├── allDevicesFull.json
+│   ├── deviceCapabilites7.json
+│   ├── deviceCapabilities3.json
+│   └── deviceHistory7.json
+├── entities
+│   ├── graphaverage.go
+│   ├── hubdevices.go
+│   └── hubhost.go
 ├── go.mod
-└── internal
-    ├── entities
-    │   └── apchosts.go
-    ├── interfaces
-    │   ├── apcprovider.go
-    │   ├── provider.go
-    │   ├── service.go
-    │   └── viewprovider.go
-    ├── providers
-    │   ├── apcprovider.go
-    │   └── viewprovider.go
-    ├── services
-    │   └── service.go
-    └── ui
-        ├── monitor.go
-        └── settings.go
+├── go.sum
+├── interfaces
+│   ├── configuration.go
+│   ├── graphpointsmoothing.go
+│   ├── hubprovider.go
+│   ├── provider.go
+│   ├── service.go
+│   └── viewprovider.go
+├── main.go
+├── providers
+│   ├── config.go
+│   └── hubitatprovider.go
+├── resources
+│   ├── apcupsd.png
+│   └── gapc_prefs.png
+├── services
+│   └── service.go
+└── ui
+    ├── detailed.go.notReady
+    ├── menus.go
+    ├── monitor.go
+    ├── overview.go
+    ├── preferences.go
+    └── viewprovider.go
 ```
 
 ### Contributing

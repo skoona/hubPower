@@ -3,6 +3,7 @@ package providers
 import (
 	"encoding/json"
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/data/binding"
 	"github.com/skoona/hubPower/commons"
 	"github.com/skoona/hubPower/entities"
 	"github.com/skoona/hubPower/interfaces"
@@ -25,11 +26,11 @@ func NewConfig(prefs fyne.Preferences) (interfaces.Configuration, error) {
 	var hubHosts []*entities.HubHost
 
 	defaultHubHosts := []*entities.HubHost{
-		entities.NewHubHost("Scotts", "10.100.1.41", "a79c07db-9178-4976-bd10-428aa0d3d159", "10.100.1.183"),
+		entities.NewHubHost("Scotts", commons.HubitatIP(), "a79c07db-9178-4976-bd10-428aa0d3d159", commons.DefaultIp(), 5),
 	}
 
-	commons.DebugLog("Default IP: ", commons.DefaultIp())
-
+	commons.DebugLog("This IpAddress: ", commons.DefaultIp())
+	commons.DebugLog("Hubitat IpAddress: ", commons.HubitatIP())
 	// retrieve existing
 	hubHostString := prefs.String(HubHostsPrefs)
 	if hubHostString != "" {
@@ -47,6 +48,12 @@ func NewConfig(prefs fyne.Preferences) (interfaces.Configuration, error) {
 		}
 		prefs.SetString(HubHostsPrefs, string(save))
 		hubHosts = defaultHubHosts
+	}
+	for _, h := range hubHosts {
+		h.ThisIpAddress = commons.DefaultIp() + ":2600"
+		for _, dv := range h.DeviceDetails {
+			dv.BWattValue = binding.NewFloat()
+		}
 	}
 
 	cfg := &config{

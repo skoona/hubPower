@@ -1,0 +1,73 @@
+[
+	{
+		"capabilities": [
+			"Configuration",
+			"Actuator",
+			"VoltageMeasurement",
+			{
+				"attributes": [
+					{
+						"name": "voltage",
+						"currentValue": "124",
+						"dataType": "NUMBER",
+						"values": null
+					},
+					{
+						"name": "frequency",
+						"currentValue": null,
+						"dataType": "NUMBER",
+						"values": null
+					}
+				]
+			},
+			"CurrentMeter",
+			{
+				"attributes": [
+					{
+						"name": "amperage",
+						"currentValue": "4",
+						"dataType": "NUMBER",
+						"values": null
+					}
+				]
+			},
+			"Refresh",
+			"PowerMeter",
+			{
+				"attributes": [
+					{
+						"name": "power",
+						"currentValue": "452",
+						"dataType": "NUMBER",
+						"values": null
+					}
+				]
+			},
+			"EnergyMeter",
+			{
+				"attributes": [
+					{
+						"name": "energy",
+						"currentValue": "1666",
+						"dataType": "NUMBER",
+						"values": null
+					}
+				]
+			},
+			"Switch",
+			{
+				"attributes": [
+					{
+						"name": "switch",
+						"currentValue": "on",
+						"dataType": "ENUM",
+						"values": [
+							"on",
+							"off"
+						]
+					}
+				]
+			}
+		]
+	}
+]

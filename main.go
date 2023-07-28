@@ -7,7 +7,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/dialog"
 	"github.com/skoona/hubPower/commons"
-
+	"github.com/skoona/hubPower/providers"
 	"github.com/skoona/hubPower/services"
 	"github.com/skoona/hubPower/ui"
 	"log"
@@ -43,6 +43,7 @@ func main() {
 		commons.ShutdownSignals <- syscall.SIGINT
 		cfg.ResetConfig()
 	}
+	//cfg.ResetConfig()
 
 	service, err := services.NewService(ctx, cfg)
 	if err != nil {

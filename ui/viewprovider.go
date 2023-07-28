@@ -18,9 +18,10 @@ type viewProvider struct {
 	prefsWindow   fyne.Window
 	overviewTable *widget.Table
 	prfStatusLine *widget.Label
+	chartPageData map[string]map[string]interfaces.GraphPointSmoothing
 	chartKeys     []string
-	cfgHubHosts   []*entities.HubHost
-	cfgHubHost    *entities.HubHost
+	hosts         []*entities.HubHost
+	host          *entities.HubHost
 }
 
 // compiler helpers to insure interfaces requirements are meet
@@ -38,12 +39,13 @@ func NewViewProvider(ctx context.Context, cfg interfaces.Configuration, service 
 		ctx:           ctx,
 		cfg:           cfg,
 		service:       service,
-		mainWindow:    fyne.CurrentApp().NewWindow("ggAPC Monitor"),
+		mainWindow:    fyne.CurrentApp().NewWindow("Hubitat Power Monitor"),
 		prefsWindow:   fyne.CurrentApp().NewWindow("Preferences"),
 		prfStatusLine: stLine,
 		chartPageData: map[string]map[string]interfaces.GraphPointSmoothing{}, // [host][chartkey]struct
-		cfgHubHosts:   hh,
-		cfgHubHost:    hh[0],
+		hosts:         hh,
+		host:          hh[0],
+		chartKeys:     []string{"Watts", "Voltage"},
 	}
 	view.mainWindow.Resize(fyne.NewSize(632, 432))
 	view.mainWindow.SetCloseIntercept(func() { view.mainWindow.Hide() })
@@ -77,6 +79,7 @@ func (v *viewProvider) Shutdown() {
 	commons.DebugLog("ViewProvider::Shutdown() called.")
 }
 
+/*
 // prefsAddAction adds or replaces the host in the form
 func (v *viewProvider) prefsAddAction() {
 	v.prfHostKeys = v.cfg.HostKeys()
@@ -93,3 +96,4 @@ func (v *viewProvider) prefsDelAction() {
 	v.ShowPrefsPage()
 	v.prfStatusLine.SetText("Host " + n + " was removed")
 }
+*/

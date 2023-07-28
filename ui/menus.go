@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/driver/desktop"
 	"github.com/skoona/hubPower/commons"
 	"net/url"
@@ -15,7 +16,7 @@ func (v *viewProvider) shortcutFocused(s fyne.Shortcut) {
 func (v *viewProvider) SknTrayMenu() {
 	// Add SystemBar Menu
 	if desk, ok := fyne.CurrentApp().(desktop.App); ok {
-		m := fyne.NewMenu("gAPC Monitor",
+		m := fyne.NewMenu("Hubitat Power Monitor",
 			fyne.NewMenuItem("Show monitor...", func() {
 				v.mainWindow.Show()
 			}),

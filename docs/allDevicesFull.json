@@ -1,0 +1,90 @@
+[
+	{
+		"name": "Minoston Mini Power Meter Plug",
+		"label": "Office UPS",
+		"type": "Minoston Mini Power Meter Plug",
+		"id": "3",
+		"date": null,
+		"model": null,
+		"manufacturer": null,
+		"room": "Office",
+		"capabilities": [
+			"Configuration",
+			"Actuator",
+			"VoltageMeasurement",
+			"CurrentMeter",
+			"Refresh",
+			"PowerMeter",
+			"EnergyMeter",
+			"Switch"
+		],
+		"attributes": {
+			"voltage": "125",
+			"dataType": "NUMBER",
+			"values": null,
+			"energy": "14",
+			"amperage": "2",
+			"frequency": null,
+			"switch": "on",
+			"power": "184"
+		},
+		"commands": [
+			{
+				"command": "configure"
+			},
+			{
+				"command": "off"
+			},
+			{
+				"command": "on"
+			},
+			{
+				"command": "refresh"
+			}
+		]
+	},
+	{
+		"name": "Minoston Mini Power Meter Plug",
+		"label": "Main UPS",
+		"type": "Minoston Mini Power Meter Plug",
+		"id": "7",
+		"date": "2023-07-26T02:22:24+0000",
+		"model": null,
+		"manufacturer": null,
+		"room": "Mechanical Room",
+		"capabilities": [
+			"Configuration",
+			"Actuator",
+			"VoltageMeasurement",
+			"CurrentMeter",
+			"Refresh",
+			"PowerMeter",
+			"EnergyMeter",
+			"Switch"
+		],
+		"attributes": {
+			"voltage": "123",
+			"dataType": "NUMBER",
+			"values": null,
+			"energy": "1666",
+			"amperage": "4",
+			"frequency": null,
+			"switch": "on",
+			"power": "453"
+		},
+		"commands": [
+			{
+				"command": "configure"
+			},
+			{
+				"command": "off"
+			},
+			{
+				"command": "on"
+			},
+			{
+				"command": "refresh"
+			}
+		]
+	}
+]

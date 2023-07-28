@@ -1,0 +1,222 @@
+[
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "435",
+		"date": "2023-07-26T02:18:29+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "430",
+		"date": "2023-07-26T02:18:29+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "435",
+		"date": "2023-07-26T02:18:29+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "448",
+		"date": "2023-07-26T02:18:29+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "434",
+		"date": "2023-07-26T02:18:28+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "447",
+		"date": "2023-07-26T02:18:28+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "459",
+		"date": "2023-07-26T02:18:28+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "436",
+		"date": "2023-07-26T02:18:28+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "442",
+		"date": "2023-07-26T02:18:28+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "449",
+		"date": "2023-07-26T02:18:28+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "437",
+		"date": "2023-07-26T02:18:28+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "431",
+		"date": "2023-07-26T02:18:27+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "452",
+		"date": "2023-07-26T02:18:27+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "438",
+		"date": "2023-07-26T02:18:27+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "429",
+		"date": "2023-07-26T02:18:27+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "443",
+		"date": "2023-07-26T02:18:27+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "436",
+		"date": "2023-07-26T02:18:26+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "454",
+		"date": "2023-07-26T02:18:26+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "441",
+		"date": "2023-07-26T02:18:26+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	},
+	{
+		"device_id": "7",
+		"label": "Main UPS",
+		"room": "Mechanical Room",
+		"name": "power",
+		"value": "431",
+		"date": "2023-07-26T02:18:26+0000",
+		"unit": "W",
+		"isStateChange": true,
+		"source": "DEVICE"
+	}
+]

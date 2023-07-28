@@ -227,37 +227,6 @@ func (h *hubitat) CreateDeviceEventListener() bool {
 		return false
 	}
 
-	go func(p *hubitat) { // shutdown monitor
-
-		commons.DebugLog("HubitatProvider::CreateDeviceEventListener() publisher BEGIN")
-	Gone:
-		for {
-			select {
-			case <-p.ctx.Done():
-				commons.DebugLog("HubitatProvider::CreateDeviceEventListener() shutdown listener: ", p.ctx.Err().Error())
-				p.Shutdown()
-				break Gone
-
-			//case ev = <-p.eventListenerChan:
-			//	commons.DebugLog("HubitatProvider::CreateDeviceEventListener() publisher received: ", ev)
-			//	for _, device := range p.host.DeviceDetails {
-			//		if device.Id == ev.Content.DeviceId {
-			//			z, _ := strconv.ParseFloat(ev.Content.Value, 32)
-			//			err := device.BWattValue.Set(z)
-			//			if err != nil {
-			//				commons.DebugLog("HubitatProvider::CreateDeviceEventListener(", ev.Content.Name, ") float parsing error: ", err.Error())
-			//			}
-			//			break
-			//		}
-			//	}
-
-			default:
-				time.Sleep(100 * time.Millisecond)
-			}
-		}
-		commons.DebugLog("HubitatProvider::CreateDeviceEventListener() publisher END")
-	}(h)
-
 	go func(p *hubitat) { // listener
 		// start a server to listen
 		commons.DebugLog("HubitatProvider::CreateDeviceEventListener() Listener Starting")
@@ -266,14 +235,12 @@ func (h *hubitat) CreateDeviceEventListener() bool {
 
 		mux.HandleFunc("/hubEvents", func(w http.ResponseWriter, r *http.Request) {
 			body, _ := io.ReadAll(r.Body)
-			//err = json.NewDecoder(r.Body).Decode(&event)
 			err = json.Unmarshal(body, &event)
 			if err != nil {
 				commons.DebugLog("HubitatProvider::CreateDeviceEventListener() Listener Error: ", err.Error())
 			} else {
 				// on receive push to listener channel
 				p.eventListenerChan <- event
-				//commons.DebugLog(string(body))
 			}
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(202)
@@ -285,6 +252,7 @@ func (h *hubitat) CreateDeviceEventListener() bool {
 			err = json.NewEncoder(w).Encode(&HubError{Error: true, Type: "InvalidRequest", Message: "not supported"})
 		})
 
+		commons.DebugLog("HubitatProvider::CreateDeviceEventListener() Servers IP Address: ", p.host.ThisIpAddress)
 		p.listener = http.Server{
 			Addr:    p.host.ThisIpAddress,
 			Handler: mux,
@@ -331,7 +299,7 @@ func (h *hubitat) Shutdown() {
 		if err != nil {
 			commons.DebugLog(err.Error())
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(4 * time.Second) // give server time to exit
 		close(h.eventListenerChan)
 	}
 	commons.DebugLog("HubitatProvider::Shutdown() END")

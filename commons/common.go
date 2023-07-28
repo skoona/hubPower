@@ -18,6 +18,7 @@ const (
 	AppIcon         = "apcupsd"
 	PreferencesIcon = "preferences"
 	TrustedIpKey    = "TRUSTED_IP"
+	HubIpAddressKey = "HUBITAT_IP"
 )
 
 // ShutdownSignals alternate panic() implementation, causes an orderly shutdown
@@ -115,4 +116,12 @@ func DefaultIp() string {
 		}
 	}
 	return currentIP
+}
+
+func HubitatIP() string {
+	ip := os.Getenv(HubIpAddressKey)
+	if ip == "" {
+		ip = "10.100.1.41"
+	}
+	return ip
 }

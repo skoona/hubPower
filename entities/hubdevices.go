@@ -52,6 +52,10 @@ type DeviceDetails struct {
 	BWattValue binding.Float `json:"-"`
 }
 
+deviceDetails :=
+func (dd *DeviceDetails)
+
+
 type DeviceEvent struct {
 	DeviceId      string `json:"device_id"`
 	Label         string `json:"label"`
@@ -64,6 +68,7 @@ type DeviceEvent struct {
 	Source        string `json:"source"`
 }
 
+// {"content":{"name":"power","value":"456","displayName":"Main UPS","deviceId":"7","descriptionText":"Main UPS power is: 456W","unit":"W","type":null,"data":null}}
 type DeviceEventStream struct {
 	Content struct {
 		Name            string      `json:"name"`

@@ -1,0 +1,16 @@
+[
+	{
+		"id": "3",
+		"name": "Minoston Mini Power Meter Plug",
+		"label": "Office UPS",
+		"type": "Minoston Mini Power Meter Plug",
+		"room": "Office"
+	},
+	{
+		"id": "7",
+		"name": "Minoston Mini Power Meter Plug",
+		"label": "Main UPS",
+		"type": "Minoston Mini Power Meter Plug",
+		"room": "Mechanical Room"
+	}
+]
