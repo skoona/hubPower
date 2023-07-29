@@ -38,6 +38,7 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 				chart, err = sknlinechart.NewLineChart(
 					hub.Name,
 					"",
+					65,
 					&data,
 				)
 				if err != nil {
