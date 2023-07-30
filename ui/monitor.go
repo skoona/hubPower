@@ -66,8 +66,11 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 						commons.DebugLog("ViewProvider::MonitorPage() shutdown listener: ", ctxx.Err().Error())
 						break Gone
 
-					case ev := <-eventChannel:
+					case ev, ok := <-eventChannel:
 						commons.DebugLog("ViewProvider::MonitorPage(", host.Name, ") listener received: ", ev)
+						if !ok {
+							break Gone
+						}
 					found:
 						for _, device := range host.DeviceDetails {
 							if device.Id == ev.Content.DeviceId {
