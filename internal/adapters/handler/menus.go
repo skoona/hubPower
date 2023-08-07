@@ -1,4 +1,4 @@
-package ui
+package handler
 
 import (
 	"fyne.io/fyne/v2"
@@ -7,13 +7,13 @@ import (
 	"net/url"
 )
 
-func (v *viewProvider) shortcutFocused(s fyne.Shortcut) {
+func (v *viewHandler) shortcutFocused(s fyne.Shortcut) {
 	if focused, ok := v.mainWindow.Canvas().Focused().(fyne.Shortcutable); ok {
 		focused.TypedShortcut(s)
 	}
 }
 
-func (v *viewProvider) SknTrayMenu() {
+func (v *viewHandler) SknTrayMenu() {
 	// Add SystemBar Menu
 	if desk, ok := fyne.CurrentApp().(desktop.App); ok {
 		m := fyne.NewMenu("Hubitat Power Monitor",
@@ -31,7 +31,7 @@ func (v *viewProvider) SknTrayMenu() {
 		desk.SetSystemTrayIcon(theme.SettingsIcon())
 	}
 }
-func (v *viewProvider) SknMenus() {
+func (v *viewHandler) SknMenus() {
 
 	settingsItem := fyne.NewMenuItem("Preferences", func() {
 		if v.prefsWindow.Content().Size().Width <= 10 {

@@ -1,8 +1,8 @@
-package interfaces
+package ports
 
 import "fyne.io/fyne/v2"
 
-type ViewProvider interface {
+type ViewHandler interface {
 	ShowPrefsPage()
 	ShowMainPage() fyne.Window
 	Shutdown()

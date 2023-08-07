@@ -1,4 +1,4 @@
-package ui
+package handler
 
 import (
 	"context"
@@ -6,9 +6,9 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/theme"
-	"github.com/skoona/hubPower/commons"
-	"github.com/skoona/hubPower/entities"
-	"github.com/skoona/hubPower/interfaces"
+	"github.com/skoona/hubPower/internal/commons"
+	"github.com/skoona/hubPower/internal/core/entities"
+	"github.com/skoona/hubPower/internal/core/ports"
 	"github.com/skoona/sknlinechart"
 	"strconv"
 	"syscall"
@@ -16,7 +16,7 @@ import (
 )
 
 // MonitorPage primary application page
-func (v *viewProvider) MonitorPage() *fyne.Container {
+func (v *viewHandler) MonitorPage() *fyne.Container {
 	hostTabs := container.NewAppTabs(
 		container.NewTabItemWithIcon("Hub Assets", theme.ComputerIcon(), v.OverviewPage()),
 	)
@@ -28,7 +28,7 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 		if hub.IsEnabled() {
 			for _, device := range hub.DeviceDetails {
 				// GraphSamplingPeriod for Charts
-				v.chartPageData[hub.Name] = map[string]interfaces.GraphPointSmoothing{}
+				v.chartPageData[hub.Name] = map[string]ports.GraphPointSmoothing{}
 				for _, key := range v.chartKeys {
 					intf := entities.NewGraphAverage(hub.Name, key, hub.GraphingSamplePeriod)
 					v.chartPageData[hub.Name][key] = intf
@@ -56,18 +56,18 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 				hostTabs.Append(tab)
 			}
 
-			go func(ctxx context.Context, vv *viewProvider, host *entities.HubHost, lc sknlinechart.LineChart) { // shutdown monitor
+			go func(ctxx context.Context, vv *viewHandler, host *entities.HubHost, lc sknlinechart.LineChart) { // shutdown monitor
 				eventChannel := vv.service.HubEventsMessageChannel(host.Id)
-				commons.DebugLog("ViewProvider::MonitorPage() listener BEGIN")
+				commons.DebugLog("ViewHandler::MonitorPage() listener BEGIN")
 			Gone:
 				for {
 					select {
 					case <-ctxx.Done():
-						commons.DebugLog("ViewProvider::MonitorPage() shutdown listener: ", ctxx.Err().Error())
+						commons.DebugLog("ViewHandler::MonitorPage() shutdown listener: ", ctxx.Err().Error())
 						break Gone
 
 					case ev, ok := <-eventChannel:
-						commons.DebugLog("ViewProvider::MonitorPage(", host.Name, ") listener received: ", ev)
+						commons.DebugLog("ViewHandler::MonitorPage(", host.Name, ") listener received: ", ev)
 						if !ok {
 							break Gone
 						}
@@ -79,7 +79,7 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 									z, _ := strconv.ParseFloat(ev.Content.Value, 32)
 									err := device.BWattValue.Set(z)
 									if err != nil {
-										commons.DebugLog("ViewProvider::MonitorPage() listener(", ev.Content.Name, ") float parsing error: ", err.Error())
+										commons.DebugLog("ViewHandler::MonitorPage() listener(", ev.Content.Name, ") float parsing error: ", err.Error())
 									}
 									d64 := vv.chartPageData[host.Name]["Watts"].AddValue(z)
 									point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorYellow, time.Now().Format(time.RFC1123))
@@ -89,7 +89,7 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 									z, _ := strconv.ParseInt(ev.Content.Value, 10, 32)
 									err := device.BVoltageValue.Set(int(z))
 									if err != nil {
-										commons.DebugLog("ViewProvider::MonitorPage() listener(", ev.Content.Name, ") int parsing error: ", err.Error())
+										commons.DebugLog("ViewHandler::MonitorPage() listener(", ev.Content.Name, ") int parsing error: ", err.Error())
 									}
 									d64 := vv.chartPageData[host.Name]["Voltage"].AddValue(float64(z))
 									point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorGreen, time.Now().Format(time.RFC1123))
@@ -100,7 +100,7 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 						}
 
 					default:
-						time.Sleep(100 * time.Millisecond)
+						//time.Sleep(100 * time.Millisecond)
 					}
 				}
 				commons.DebugLog("HubitatProvider::CreateDeviceEventListener() publisher END")
@@ -113,10 +113,10 @@ func (v *viewProvider) MonitorPage() *fyne.Container {
 
 /*
 // handleUpdatesForMonitorPage does exactly that
-func (v *viewProvider) handleUpdatesForMonitorPage(host *entities.ApcHost, service interfaces.Service, status *widget.Entry, events *widget.Entry, chart sknlinechart.LineChart, kChan chan map[string]string) {
+func (v *viewHandler) handleUpdatesForMonitorPage(host *entities.ApcHost, service ports.Service, status *widget.Entry, events *widget.Entry, chart sknlinechart.LineChart, kChan chan map[string]string) {
 	//hubEvents := v.service. .HubEventsMessageChannel()
-	go func(h *entities.ApcHost, svc interfaces.Service, st *widget.Entry, ev *widget.Entry, chart sknlinechart.LineChart, knowledge chan map[string]string) {
-		commons.DebugLog("ViewProvider::HandleUpdatesForMonitorPage[", h.Name, "] BEGIN")
+	go func(h *entities.ApcHost, svc ports.Service, st *widget.Entry, ev *widget.Entry, chart sknlinechart.LineChart, knowledge chan map[string]string) {
+		commons.DebugLog("ViewHandler::HandleUpdatesForMonitorPage[", h.Name, "] BEGIN")
 		rcvTuple := svc.MessageChannelByName(h.Name)
 		var stBuild strings.Builder
 		var evBuild strings.Builder
@@ -128,7 +128,7 @@ func (v *viewProvider) handleUpdatesForMonitorPage(host *entities.ApcHost, servi
 			case <-v.ctx.Done():
 				close(knowledge) // detail pages
 				v.bondedUpsStatus[h.Name].UnbindUpsData()
-				commons.DebugLog("ViewProvider::HandleUpdatesForMonitorPage[", h.Name, "] fired:", v.ctx.Err().Error())
+				commons.DebugLog("ViewHandler::HandleUpdatesForMonitorPage[", h.Name, "] fired:", v.ctx.Err().Error())
 				break pageExit
 
 			case msg := <-rcvTuple.Status:
@@ -219,7 +219,7 @@ func (v *viewProvider) handleUpdatesForMonitorPage(host *entities.ApcHost, servi
 			}
 		}
 		// cleanup data syncs
-		commons.DebugLog("ViewProvider::HandleUpdatesForMonitorPage[", h.Name, "] ENDED")
+		commons.DebugLog("ViewHandler::HandleUpdatesForMonitorPage[", h.Name, "] ENDED")
 	}(host, service, status, events, chart, kChan)
 }
 */

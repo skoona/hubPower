@@ -2,7 +2,7 @@ package entities
 
 import (
 	"fyne.io/fyne/v2/data/binding"
-	"github.com/skoona/hubPower/commons"
+	"github.com/skoona/hubPower/internal/commons"
 	"reflect"
 )
 

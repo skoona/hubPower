@@ -2,7 +2,7 @@ package entities
 
 import (
 	"fmt"
-	"github.com/skoona/hubPower/commons"
+	"github.com/skoona/hubPower/internal/commons"
 	"strings"
 	"time"
 )
@@ -14,7 +14,7 @@ type GraphAverage struct {
 	dataPoints  []float64
 }
 
-//var _ (interfaces.GraphPointSmoothing) = (*GraphAverage)(nil)
+//var _ (ports.GraphPointSmoothing) = (*GraphAverage)(nil)
 
 // NewGraphAverage create a data queue of graphPeriod depth
 // returns the straight average of the queue,

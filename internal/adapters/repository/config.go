@@ -1,12 +1,12 @@
-package providers
+package repository
 
 import (
 	"encoding/json"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/data/binding"
-	"github.com/skoona/hubPower/commons"
-	"github.com/skoona/hubPower/entities"
-	"github.com/skoona/hubPower/interfaces"
+	"github.com/skoona/hubPower/internal/commons"
+	"github.com/skoona/hubPower/internal/core/entities"
+	"github.com/skoona/hubPower/internal/core/ports"
 	"strings"
 )
 
@@ -19,10 +19,10 @@ type config struct {
 	prefs fyne.Preferences
 }
 
-var _ interfaces.Configuration = (*config)(nil)
-var _ interfaces.Provider = (*config)(nil)
+var _ ports.Configuration = (*config)(nil)
+var _ ports.Provider = (*config)(nil)
 
-func NewConfig(prefs fyne.Preferences) (interfaces.Configuration, error) {
+func NewConfigRepository(prefs fyne.Preferences) (ports.Configuration, error) {
 	var err error
 	var hubHosts []*entities.HubHost
 
@@ -34,17 +34,17 @@ func NewConfig(prefs fyne.Preferences) (interfaces.Configuration, error) {
 	// retrieve existing
 	hubHostString := prefs.String(HubHostsPrefs)
 	if hubHostString != "" {
-		commons.DebugLog("NewConfig() load HubHost preferences succeeded ")
+		commons.DebugLog("NewConfigRepository() load HubHost preferences succeeded ")
 		err = json.Unmarshal([]byte(hubHostString), &hubHosts)
 		if err != nil {
-			commons.DebugLog("NewConfig() Unmarshal HubHosts failed: ", err.Error())
+			commons.DebugLog("NewConfigRepository() Unmarshal HubHosts failed: ", err.Error())
 		}
 	}
 	if len(hubHosts) == 0 {
-		commons.DebugLog("NewConfig() load HubHost preferences failed using defaults ")
+		commons.DebugLog("NewConfigRepository() load HubHost preferences failed using defaults ")
 		save, err := json.Marshal(defaultHubHosts)
 		if err != nil {
-			commons.DebugLog("NewConfig() Marshal saving HubHost prefs failed: ", err.Error())
+			commons.DebugLog("NewConfigRepository() Marshal saving HubHost prefs failed: ", err.Error())
 		}
 		prefs.SetString(HubHostsPrefs, string(save))
 		hubHosts = defaultHubHosts
@@ -82,7 +82,7 @@ func (c *config) HostById(id string) *entities.HubHost {
 func (c *config) Hosts() []*entities.HubHost {
 	return c.hubs
 }
-func (c *config) Apply(h *entities.HubHost) interfaces.Configuration {
+func (c *config) Apply(h *entities.HubHost) ports.Configuration {
 	index := -1
 	for idx, hub := range c.hubs {
 		if h.Id == hub.Id {

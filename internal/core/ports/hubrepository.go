@@ -1,8 +1,10 @@
-package interfaces
+package ports
 
-import "github.com/skoona/hubPower/entities"
+import (
+	"github.com/skoona/hubPower/internal/core/entities"
+)
 
-type HubProvider interface {
+type HubRepository interface {
 	DeviceList() []*entities.DeviceList
 	DeviceDetailsList() []*entities.DeviceDetails
 	DeviceDetailById(id string) *entities.Device

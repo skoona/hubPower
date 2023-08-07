@@ -1,4 +1,4 @@
-package interfaces
+package ports
 
 type GraphPointSmoothing interface {
 	AddValue(value float64) float64

@@ -5,7 +5,7 @@ go 1.20
 require (
 	fyne.io/fyne/v2 v2.3.5
 	github.com/google/uuid v1.3.0
-	github.com/skoona/sknlinechart v1.6.1
+	github.com/skoona/sknlinechart v1.6.5
 )
 
 require (

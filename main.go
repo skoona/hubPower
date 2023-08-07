@@ -6,10 +6,10 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/dialog"
-	"github.com/skoona/hubPower/commons"
-	"github.com/skoona/hubPower/providers"
-	"github.com/skoona/hubPower/services"
-	"github.com/skoona/hubPower/ui"
+	"github.com/skoona/hubPower/internal/adapters/handler"
+	"github.com/skoona/hubPower/internal/adapters/repository"
+	"github.com/skoona/hubPower/internal/commons"
+	"github.com/skoona/hubPower/internal/core/services"
 	"log"
 	"os"
 	"os/signal"
@@ -22,9 +22,8 @@ func main() {
 	commons.ShutdownSignals = make(chan os.Signal, 1)
 
 	ctx, cancelHub := context.WithCancel(context.Background())
-	//defer cancelHub()
 
-	gui := app.NewWithID("net.skoona.projects.ggapcmon")
+	gui := app.NewWithID("net.skoona.projects.hubPower")
 	commons.DebugLog("main()::RootURI: ", gui.Storage().RootURI().Path())
 	gui.SetIcon(commons.SknSelectThemedResource(commons.AppIcon))
 
@@ -37,9 +36,9 @@ func main() {
 		a.Quit()
 	}(commons.ShutdownSignals, gui)
 
-	cfg, err := providers.NewConfig(gui.Preferences())
+	cfg, err := repository.NewConfigRepository(gui.Preferences())
 	if err != nil {
-		dialog.ShowError(fmt.Errorf("main()::NewConfig(): %v", err), gui.NewWindow("ggapcmon Configuration Failed"))
+		dialog.ShowError(fmt.Errorf("main()::NewConfigRepository(): %v", err), gui.NewWindow("hubPower Configuration Failed"))
 		commons.ShutdownSignals <- syscall.SIGINT
 		cfg.ResetConfig()
 	}
@@ -51,7 +50,7 @@ func main() {
 	}
 	defer service.Shutdown()
 
-	vp := ui.NewViewProvider(ctx, cfg, service)
+	vp := handler.NewViewHandler(ctx, cfg, service)
 	defer vp.Shutdown()
 
 	win := vp.ShowMainPage()

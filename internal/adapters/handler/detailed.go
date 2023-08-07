@@ -1,4 +1,4 @@
-package ui
+package handler
 
 import (
 	"fyne.io/fyne/v2"
@@ -8,11 +8,11 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/skoona/hubPower/entities"
+	"github.com/skoona/hubPower/internal/core/entities"
 	"image/color"
 )
 
-func (v *viewProvider) DeviceCard(dv *entities.DeviceDetails) *fyne.Container {
+func (v *viewHandler) DeviceCard(dv *entities.DeviceDetails) *fyne.Container {
 	desc := canvas.NewText(dv.Label, theme.PrimaryColor())
 	desc.Alignment = fyne.TextAlignCenter
 	desc.TextStyle = fyne.TextStyle{Italic: true}

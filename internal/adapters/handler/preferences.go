@@ -1,4 +1,4 @@
-package ui
+package handler
 
 import (
 	"fmt"
@@ -8,15 +8,15 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/skoona/hubPower/commons"
-	"github.com/skoona/hubPower/entities"
+	"github.com/skoona/hubPower/internal/commons"
+	"github.com/skoona/hubPower/internal/core/entities"
 	"image/color"
 	"strconv"
 	"time"
 )
 
 // PreferencesPage manages application settings
-func (v *viewProvider) PreferencesPage() *fyne.Container {
+func (v *viewHandler) PreferencesPage() *fyne.Container {
 	sDesc := canvas.NewText("Selected Hub", color.White)
 	sDesc.Alignment = fyne.TextAlignLeading
 	sDesc.TextStyle = fyne.TextStyle{Italic: true}

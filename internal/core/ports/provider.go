@@ -1,4 +1,4 @@
-package interfaces
+package ports
 
 type Provider interface {
 	Shutdown()

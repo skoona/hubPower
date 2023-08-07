@@ -1,4 +1,4 @@
-package ui
+package handler
 
 import (
 	"fmt"
@@ -7,12 +7,12 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/skoona/hubPower/commons"
+	"github.com/skoona/hubPower/internal/commons"
 	"image/color"
 	"strings"
 )
 
-func (v *viewProvider) OverviewPage() *fyne.Container {
+func (v *viewHandler) OverviewPage() *fyne.Container {
 	table := widget.NewTable(
 		func() (int, int) { // length, columns
 			return len(v.hosts) + 1, 3

@@ -1,4 +1,4 @@
-package providers
+package repository
 
 import (
 	"context"
@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"fyne.io/fyne/v2/data/binding"
-	"github.com/skoona/hubPower/commons"
-	"github.com/skoona/hubPower/entities"
-	"github.com/skoona/hubPower/interfaces"
+	"github.com/skoona/hubPower/internal/commons"
+	"github.com/skoona/hubPower/internal/core/entities"
+	"github.com/skoona/hubPower/internal/core/ports"
 	"io"
 	"net/http"
 	"net/url"
@@ -43,12 +43,12 @@ type hubitat struct {
 	shutdownGroup     sync.WaitGroup
 }
 
-var _ (interfaces.HubProvider) = (*hubitat)(nil)
-var _ (interfaces.Provider) = (*hubitat)(nil)
+var _ (ports.HubRepository) = (*hubitat)(nil)
+var _ (ports.Provider) = (*hubitat)(nil)
 
-// NewHubitatProvider creates a new hub provider to a configured hub host
+// NewHubitatRepository creates a new hub provider to a configured hub host
 // calls DeviceList to initialize the devices in provided hubHost
-func NewHubitatProvider(ctx context.Context, hubHost *entities.HubHost) interfaces.HubProvider {
+func NewHubitatRepository(ctx context.Context, hubHost *entities.HubHost) ports.HubRepository {
 	provider := &hubitat{
 		ctx:               ctx,
 		eventListenerChan: make(chan entities.DeviceEventStream, 48),

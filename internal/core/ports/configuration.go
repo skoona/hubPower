@@ -1,7 +1,7 @@
-package interfaces
+package ports
 
 import (
-	"github.com/skoona/hubPower/entities"
+	"github.com/skoona/hubPower/internal/core/entities"
 )
 
 type Configuration interface {

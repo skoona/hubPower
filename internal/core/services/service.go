@@ -2,25 +2,25 @@ package services
 
 import (
 	"context"
-	"github.com/skoona/hubPower/commons"
-	"github.com/skoona/hubPower/entities"
-	"github.com/skoona/hubPower/interfaces"
-	"github.com/skoona/hubPower/providers"
+	"github.com/skoona/hubPower/internal/adapters/repository"
+	"github.com/skoona/hubPower/internal/commons"
+	"github.com/skoona/hubPower/internal/core/entities"
+	"github.com/skoona/hubPower/internal/core/ports"
 )
 
 type service struct {
 	ctx          context.Context
-	cfg          interfaces.Configuration
-	hubProviders []interfaces.HubProvider
+	cfg          ports.Configuration
+	hubProviders []ports.HubRepository
 }
 
-var _ interfaces.Service = (*service)(nil)
+var _ ports.Service = (*service)(nil)
 
-func NewService(ctx context.Context, cfg interfaces.Configuration) (interfaces.Service, error) {
+func NewService(ctx context.Context, cfg ports.Configuration) (ports.Service, error) {
 	s := &service{
 		ctx:          ctx,
 		cfg:          cfg,
-		hubProviders: []interfaces.HubProvider{},
+		hubProviders: []ports.HubRepository{},
 	}
 
 	err := s.begin()
@@ -33,7 +33,7 @@ func (s *service) begin() error {
 	// initialize Hubs
 	for _, host := range s.cfg.Hosts() {
 		if host.IsEnabled() {
-			hpv := providers.NewHubitatProvider(s.ctx, host)
+			hpv := repository.NewHubitatRepository(s.ctx, host)
 			s.hubProviders = append(s.hubProviders, hpv)
 			host.DeviceDetails = append(host.DeviceDetails, hpv.DeviceDetailsList()...)
 			hpv.CreateDeviceEventListener()
