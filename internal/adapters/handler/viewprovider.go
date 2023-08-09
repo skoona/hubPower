@@ -7,6 +7,7 @@ import (
 	"github.com/skoona/hubPower/internal/commons"
 	"github.com/skoona/hubPower/internal/core/entities"
 	"github.com/skoona/hubPower/internal/core/ports"
+	"github.com/skoona/sknlinechart"
 )
 
 // viewHandler control structure for view management
@@ -19,6 +20,7 @@ type viewHandler struct {
 	overviewTable *widget.Table
 	prfStatusLine *widget.Label
 	chartPageData map[string]map[string]ports.GraphPointSmoothing
+	chartPages    map[string]map[string]sknlinechart.LineChart
 	chartKeys     []string
 	hosts         []*entities.HubHost
 	host          *entities.HubHost
@@ -43,6 +45,7 @@ func NewViewHandler(ctx context.Context, cfg ports.Configuration, service ports.
 		prefsWindow:   fyne.CurrentApp().NewWindow("Preferences"),
 		prfStatusLine: stLine,
 		chartPageData: map[string]map[string]ports.GraphPointSmoothing{}, // [host][chartkey]struct
+		chartPages:    map[string]map[string]sknlinechart.LineChart{},    // [hubId][deviceId]chart,
 		hosts:         hh,
 		host:          hh[0],
 		chartKeys:     []string{"Watts", "Voltage"},

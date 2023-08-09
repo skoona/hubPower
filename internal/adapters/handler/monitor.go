@@ -25,13 +25,15 @@ func (v *viewHandler) MonitorPage() *fyne.Container {
 	var chart sknlinechart.LineChart
 	var err error
 	for _, hub := range v.hosts {
+		v.chartPages[hub.Id] = make(map[string]sknlinechart.LineChart)
 		if hub.IsEnabled() {
 			for _, device := range hub.DeviceDetails {
 				// GraphSamplingPeriod for Charts
-				v.chartPageData[hub.Name] = map[string]ports.GraphPointSmoothing{}
+				v.chartPageData[device.Id] = map[string]ports.GraphPointSmoothing{}
+
 				for _, key := range v.chartKeys {
 					intf := entities.NewGraphAverage(hub.Name, key, hub.GraphingSamplePeriod)
-					v.chartPageData[hub.Name][key] = intf
+					v.chartPageData[device.Id][key] = intf
 				}
 				// for chart page updates
 				data := map[string][]*sknlinechart.ChartDatapoint{}
@@ -46,6 +48,7 @@ func (v *viewHandler) MonitorPage() *fyne.Container {
 					commons.ShutdownSignals <- syscall.SIGINT
 				}
 				chart.SetBottomLeftLabel(hub.Name + "@" + hub.IpAddress + " has " + strconv.Itoa(len(hub.DeviceDetails)) + " devices")
+				v.chartPages[hub.Id][device.Id] = chart
 
 				tab := container.NewTabItemWithIcon(device.Label, commons.SknSelectThemedResource("sensorOn"),
 					container.NewAppTabs(
@@ -56,9 +59,11 @@ func (v *viewHandler) MonitorPage() *fyne.Container {
 				hostTabs.Append(tab)
 			}
 
-			go func(ctxx context.Context, vv *viewHandler, host *entities.HubHost, lc sknlinechart.LineChart) { // shutdown monitor
+			go func(ctxx context.Context, vv *viewHandler, host *entities.HubHost) { // shutdown monitor
 				eventChannel := vv.service.HubEventsMessageChannel(host.Id)
 				commons.DebugLog("ViewHandler::MonitorPage() listener BEGIN")
+				var lc sknlinechart.LineChart
+
 			Gone:
 				for {
 					select {
@@ -81,8 +86,9 @@ func (v *viewHandler) MonitorPage() *fyne.Container {
 									if err != nil {
 										commons.DebugLog("ViewHandler::MonitorPage() listener(", ev.Content.Name, ") float parsing error: ", err.Error())
 									}
-									d64 := vv.chartPageData[host.Name]["Watts"].AddValue(z)
+									d64 := vv.chartPageData[device.Id]["Watts"].AddValue(z)
 									point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorYellow, time.Now().Format(time.RFC1123))
+									lc = vv.chartPages[host.Id][device.Id]
 									lc.ApplyDataPoint("Watts", &point)
 									break found
 								case "voltage":
@@ -91,135 +97,20 @@ func (v *viewHandler) MonitorPage() *fyne.Container {
 									if err != nil {
 										commons.DebugLog("ViewHandler::MonitorPage() listener(", ev.Content.Name, ") int parsing error: ", err.Error())
 									}
-									d64 := vv.chartPageData[host.Name]["Voltage"].AddValue(float64(z))
+									d64 := vv.chartPageData[device.Id]["Voltage"].AddValue(float64(z))
 									point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorGreen, time.Now().Format(time.RFC1123))
+									lc = vv.chartPages[host.Id][device.Id]
 									lc.ApplyDataPoint("Voltage", &point)
 									break found
 								}
 							}
 						}
-
-					default:
-						//time.Sleep(100 * time.Millisecond)
 					}
 				}
 				commons.DebugLog("HubitatProvider::CreateDeviceEventListener() publisher END")
-			}(v.ctx, v, hub, chart)
+			}(v.ctx, v, hub)
 		}
 	}
 
 	return container.NewPadded(hostTabs)
 }
-
-/*
-// handleUpdatesForMonitorPage does exactly that
-func (v *viewHandler) handleUpdatesForMonitorPage(host *entities.ApcHost, service ports.Service, status *widget.Entry, events *widget.Entry, chart sknlinechart.LineChart, kChan chan map[string]string) {
-	//hubEvents := v.service. .HubEventsMessageChannel()
-	go func(h *entities.ApcHost, svc ports.Service, st *widget.Entry, ev *widget.Entry, chart sknlinechart.LineChart, knowledge chan map[string]string) {
-		commons.DebugLog("ViewHandler::HandleUpdatesForMonitorPage[", h.Name, "] BEGIN")
-		rcvTuple := svc.MessageChannelByName(h.Name)
-		var stBuild strings.Builder
-		var evBuild strings.Builder
-		var currentSt []string
-		var currentEv []string
-	pageExit:
-		for {
-			select {
-			case <-v.ctx.Done():
-				close(knowledge) // detail pages
-				v.bondedUpsStatus[h.Name].UnbindUpsData()
-				commons.DebugLog("ViewHandler::HandleUpdatesForMonitorPage[", h.Name, "] fired:", v.ctx.Err().Error())
-				break pageExit
-
-			case msg := <-rcvTuple.Status:
-				currentSt = msg
-				stBuild.Reset()
-				for idx, line := range currentSt {
-					stBuild.WriteString(fmt.Sprintf("[%02d] %s\n", idx, line))
-				}
-				st.SetText(stBuild.String())
-				st.Refresh()
-
-			case msg := <-rcvTuple.Events:
-				currentEv = msg
-				evBuild.Reset()
-				for idx, line := range currentEv {
-					evBuild.WriteString(fmt.Sprintf("[%02d] %s\n", idx, line))
-				}
-				ev.SetText(evBuild.String())
-				ev.Refresh()
-
-			case "place":
-			found:
-				for _, hub := range v.cfgHubHosts {
-					for _, dv := range hub.DeviceDetails {
-						if dv.Id == ev.Content.DeviceId {
-							z, _ := strconv.ParseFloat(ev.Content.Value, 32)
-							_ = dv.BWattValue.Set(z)
-							break found
-						}
-					}
-				}
-
-			default:
-				var params map[string]string
-
-				if len(currentSt) > 0 {
-					params = svc.ParseStatus(currentSt)
-
-					for k, vv := range params {
-						floatStr := strings.Split(vv, " ")
-						floatStr[0] = strings.TrimSpace(floatStr[0])
-						// gapcmon charted: LINEV, LOADPCT, BCHARGE, CUMONBATT, TIMELEFT
-						switch k {
-						case "LINEV":
-							d64, _ := strconv.ParseFloat(strings.TrimSpace(floatStr[0]), 32)
-							d64 = v.chartPageData[h.Name][k].AddValue(d64)
-							point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorYellow, time.Now().Format(time.RFC1123))
-							chart.ApplyDataPoint("LINEV", &point)
-						case "LOADPCT":
-							d64, _ := strconv.ParseFloat(strings.TrimSpace(floatStr[0]), 32)
-							d64 = v.chartPageData[h.Name][k].AddValue(d64)
-							point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorBlue, time.Now().Format(time.RFC1123))
-							chart.ApplyDataPoint("LOADPCT", &point)
-						case "BCHARGE":
-							d64, _ := strconv.ParseFloat(strings.TrimSpace(floatStr[0]), 32)
-							d64 = v.chartPageData[h.Name][k].AddValue(d64)
-							point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorGreen, time.Now().Format(time.RFC1123))
-							chart.ApplyDataPoint("BCHARGE", &point)
-						case "TIMELEFT":
-							d64, _ := strconv.ParseFloat(strings.TrimSpace(floatStr[0]), 32)
-							d64 = v.chartPageData[h.Name][k].AddValue(d64)
-							point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorPurple, time.Now().Format(time.RFC1123))
-							chart.ApplyDataPoint("TIMELEFT", &point)
-						case "CUMONBATT":
-							d64, _ := strconv.ParseFloat(strings.TrimSpace(floatStr[0]), 32)
-							d64 = v.chartPageData[h.Name][k].AddValue(d64)
-							point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorOrange, time.Now().Format(time.RFC1123))
-							chart.ApplyDataPoint("CUMONBATT", &point)
-						case "STATUS":
-							if strings.Contains(vv, "ONLINE") {
-								h.State = commons.HostStatusOnline
-							} else if strings.Contains(vv, "CHARG") {
-								h.State = commons.HostStatusCharging
-							} else if strings.Contains(vv, "TEST") {
-								h.State = commons.PreferencesIcon
-							} else if strings.Contains(vv, "ONBATT") {
-								h.State = commons.HostStatusOnBattery
-							}
-						}
-
-					}
-					// details page updates
-					knowledge <- params
-
-					// ready next cycle
-					currentSt = currentSt[:0]
-				}
-			}
-		}
-		// cleanup data syncs
-		commons.DebugLog("ViewHandler::HandleUpdatesForMonitorPage[", h.Name, "] ENDED")
-	}(host, service, status, events, chart, kChan)
-}
-*/

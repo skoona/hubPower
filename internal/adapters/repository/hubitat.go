@@ -256,6 +256,13 @@ func (h *hubitat) CreateDeviceEventListener() bool {
 			w.WriteHeader(202)
 		})
 
+		mux.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Printf("received '/status': %s \n", r.Method)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(202)
+			err = json.NewEncoder(w).Encode(p.host)
+		})
+
 		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("received '/': %s \n", r.Method)
 			w.Header().Set("Content-Type", "application/json")

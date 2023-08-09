@@ -30,6 +30,7 @@ func NewHubHost(name, ipaddress, accessToken, listenOnIp string, graphPeriod tim
 		ListenerUri:          strings.Replace("http://IPADDR:2600/hubEvents", "IPADDR", listenOnIp, 1),
 		GraphingSamplePeriod: graphPeriod,
 		Enabled:              enabled,
+		DeviceDetails:        make([]*DeviceDetails, 0),
 	}
 }
 
