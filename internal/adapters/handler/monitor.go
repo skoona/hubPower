@@ -76,7 +76,7 @@ func (v *viewHandler) MonitorPage() *fyne.Container {
 						if !ok {
 							break Gone
 						}
-					found:
+						//found:
 						for _, device := range host.DeviceDetails {
 							if device.Id == ev.Content.DeviceId {
 								switch ev.Content.Name {
@@ -90,7 +90,8 @@ func (v *viewHandler) MonitorPage() *fyne.Container {
 									point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorYellow, time.Now().Format(time.RFC1123))
 									lc = vv.chartPages[host.Id][device.Id]
 									lc.ApplyDataPoint("Watts", &point)
-									break found
+									//break found
+									break
 								case "voltage":
 									z, _ := strconv.ParseInt(ev.Content.Value, 10, 32)
 									err := device.BVoltageValue.Set(int(z))
@@ -101,7 +102,8 @@ func (v *viewHandler) MonitorPage() *fyne.Container {
 									point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorGreen, time.Now().Format(time.RFC1123))
 									lc = vv.chartPages[host.Id][device.Id]
 									lc.ApplyDataPoint("Voltage", &point)
-									break found
+									//break found
+									break
 								}
 							}
 						}

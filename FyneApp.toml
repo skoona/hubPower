@@ -5,4 +5,4 @@ Website = "https://github.com/skoona/hubPower"
   Name = "Go APC Monitor"
   ID = "net.skoona.projects.hubPower"
   Version = "2.0.0"
-  Build = 12
+  Build = 13

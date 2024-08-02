@@ -10,6 +10,7 @@ import (
 	"github.com/skoona/hubPower/internal/core/entities"
 	"github.com/skoona/hubPower/internal/core/ports"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -220,6 +221,13 @@ func (h *hubitat) DeviceEventHistoryById(id string) []*entities.DeviceEvent {
 	return history
 }
 
+func logRequests(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println(r.RemoteAddr, r.Host, r.Method, r.RequestURI)
+		h.ServeHTTP(w, r)
+	})
+}
+
 // CreateDeviceEventListener instructs hub to post device event when they occur
 func (h *hubitat) CreateDeviceEventListener() bool {
 	var hubError HubError
@@ -272,7 +280,7 @@ func (h *hubitat) CreateDeviceEventListener() bool {
 		commons.DebugLog("HubitatProvider::CreateDeviceEventListener() Servers Listening on IpAddress: 0.0.0.0:2600")
 		p.listener = http.Server{
 			Addr:    "0.0.0.0:2600",
-			Handler: mux,
+			Handler: logRequests(mux),
 		}
 		p.online = true
 		if err := p.listener.ListenAndServe(); err != nil {
