@@ -97,12 +97,12 @@ func (v *viewHandler) MonitorPage() *fyne.Container {
 									}
 									break Found
 								case "voltage":
-									z, _ := strconv.ParseInt(ev.Content.Value, 10, 32)
-									err := device.BVoltageValue.Set(int(z))
+									z, _ := strconv.ParseFloat(ev.Content.Value, 32)
+									err := device.BVoltageValue.Set(z)
 									if err != nil {
 										commons.DebugLog("ViewHandler::MonitorPage() listener(", ev.Content.Name, ") int parsing error: ", err.Error())
 									}
-									d64 := vv.chartPageData[device.Id]["Voltage"].AddValue(float64(z))
+									d64 := vv.chartPageData[device.Id]["Voltage"].AddValue(z)
 									point := sknlinechart.NewChartDatapoint(float32(d64), theme.ColorGreen, time.Now().Format(time.RFC1123))
 									lc = vv.chartPages[host.Id][device.Id]
 									lc.ApplyDataPoint("Voltage", &point)

@@ -70,7 +70,7 @@ func (v *viewHandler) OverviewPage() *fyne.Container {
 					for _, dv := range devices {
 						vac, _ := dv.BVoltageValue.Get()
 						watts, _ := dv.BWattValue.Get()
-						str := fmt.Sprintf("### Id:%s %11s %s VAC: %3v Watts: %4.1f\n\n", dv.Id, dv.Label, dv.Name, vac, watts)
+						str := fmt.Sprintf("### Id:%s %11s %s VAC: %3.1fv Watts: %4.1f\n\n", dv.Id, dv.Label, dv.Name, vac, watts)
 						z += str
 					}
 				}

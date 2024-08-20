@@ -54,7 +54,7 @@ type DeviceDetails struct {
 		Command string `json:"command"`
 	} `json:"commands"`
 	BWattValue    binding.Float `json:"-"`
-	BVoltageValue binding.Int   `json:"-"`
+	BVoltageValue binding.Float `json:"-"`
 }
 
 func (d *DeviceDetails) AttrByKey(key string) interface{} {

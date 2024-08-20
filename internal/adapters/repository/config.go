@@ -53,7 +53,7 @@ func NewConfigRepository(prefs fyne.Preferences) (ports.Configuration, error) {
 		h.ListenerUri = strings.Replace("http://IPADDR:2600/hubEvents", "IPADDR", commons.DefaultIp(), 1)
 		for _, dv := range h.DeviceDetails {
 			dv.BWattValue = binding.NewFloat()
-			dv.BVoltageValue = binding.NewInt()
+			dv.BVoltageValue = binding.NewFloat()
 		}
 	}
 

@@ -89,7 +89,7 @@ func (v *viewHandler) DeviceCard(dv *entities.DeviceDetails) *fyne.Container {
 	lbl.Alignment = fyne.TextAlignTrailing
 	items.Add(lbl)
 	items.Add(widget.NewLabelWithData(
-		binding.IntToString(dv.BVoltageValue)),
+		binding.FloatToStringWithFormat(dv.BVoltageValue, "%4.1f")),
 	)
 
 	return titleBorder

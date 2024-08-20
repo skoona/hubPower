@@ -159,8 +159,8 @@ func (h *hubitat) DeviceDetailsList() []*entities.DeviceDetails {
 			x, _ := strconv.ParseFloat(device.AttrByKey("Power").(string), 32)
 			device.BWattValue = binding.NewFloat()
 			_ = device.BWattValue.Set(x)
-			z, _ := strconv.Atoi(device.AttrByKey("Voltage").(string))
-			device.BVoltageValue = binding.NewInt()
+			z, _ := strconv.ParseFloat(device.AttrByKey("Voltage").(string), 32)
+			device.BVoltageValue = binding.NewFloat()
 			_ = device.BVoltageValue.Set(z)
 		}
 	}
